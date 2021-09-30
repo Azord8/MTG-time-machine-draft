@@ -4,6 +4,7 @@ from datetime import datetime
 import random
 import os
 from pprint import pprint
+import json
 
 
 def validate(date_text):
@@ -14,10 +15,15 @@ def validate(date_text):
     return date
 
 
-def find_sets(db,date):
+def find_sets(db, date):
     sets = []
-    for set in db.Sets.find({'Release date': {'$gte': date}}):
-        sets.append(set)
+    if config['Online'] == "False":
+        for set in db.Sets.find({'Release date': {'$lte': date}, 'Online only': {'$not': {'$eq': 'true'}}}):
+            sets.append(set)
+    else:
+        for set in db.Sets.find({'Release date': {'$lte': date}}):
+            sets.append(set)
+    # Prints in groups of five
     for index in range(len(sets)):
         print(sets[index]['_id'], end=", ")
         if index % 5 == 0:
@@ -26,19 +32,40 @@ def find_sets(db,date):
 
 def create_booster(db, setcode):
     boosters = db.Boosters.find_one({'_id': setcode})
-    weights = booster = []
+    weights = []
+    booster = []
     for i in range(len(boosters['Boosters'])):
         weights.append(boosters['Boosters'][i]['weight'])
         booster.append(i)
-    print(random.choices(booster, weights, k=1))
+    selectedBooster = random.choices(booster, weights, k=1)
+    # print(selectedBooster)
+    # print(type(selectedBooster[0]))
+    selectedSheets = boosters['Boosters'][selectedBooster[0]]['contents']
+    createdBooster = []
+    for sheet, count in selectedSheets.items():
+        thisSheet = db.Sheets.find_one({'Code': setcode, 'Sheet': sheet})
+        weights = []
+        cards = []
+        for uuid, weight in thisSheet['Cards'].items():
+            cards.append(uuid)
+            weights.append(weight)
+        tempChoices = random.choices(cards, weights, k=count)
+        for i in tempChoices:
+            createdBooster.append(i)
+    createdCards = []
+    for i in createdBooster:
+        card = db.Cards.find_one({'_id': i})
+        createdCards.append([i, card['Name']])
+    pprint(createdCards)
 
 
 client = MongoClient("127.0.0.1:27017")
 db = client['MTG_Draft']
+with open("config.json", "r+") as f:
+    config = json.load(f)
 
-choice = input("first time setup? Y or N\n")
 
-if choice in ["Y", "y", "Yes", "yes", "YES"]:
+if config['First time setup'] == "True":
     # fetch all sets
     Mongo.import_all_sets()
 
@@ -50,7 +77,7 @@ if choice in ["Y", "y", "Yes", "yes", "YES"]:
             Mongo.load_cards(db, set)
     # TODO change config to show first time setup complete
 
-if choice in ["N", "n", "No", "no", "NO"]:
+if config['First time setup'] == "Debug":
     print('What function would you like to perform?\n'
           '1: Import sets from mtgjson\n'
           '2: Load all sets into database from files\n'
@@ -59,8 +86,7 @@ if choice in ["N", "n", "No", "no", "NO"]:
           '5: Load all sheets into database from files\n'
           '6: Load all cards into database from files\n'
           '7: Create booster')
-    # val = input("choose function:")
-    val = "4"
+    val = input("choose function:")
     if val == "1":
         Mongo.import_all_sets()
     elif val == "2":
@@ -88,9 +114,15 @@ if choice in ["N", "n", "No", "no", "NO"]:
             with open(os.path.join("sets/", filename), 'r') as f:
                 set = Mongo.import_set_from_file(f)
                 Mongo.load_cards(db, set)
+    elif val == '7':
+        date = input("enter year:\n")
+        date = validate(date)
+        find_sets(db, date.date().strftime("%Y-%m-%d"))
+        setcode = input("enter set:\n")
+        create_booster(db, setcode)
 
-    # date = input("enter year:\n")
-    # date = validate(date)
-    # find_sets(db, date.date().strftime("%Y-%m-%d"))
-    # setcode = input("enter set:\n")
-    # create_booster(db, setcode)
+elif config['First time setup'] == "False":
+    date = datetime.strptime(config['Date'], "%Y-%m-%d")
+    find_sets(db, date.date().strftime("%Y-%m-%d"))
+    setcode = input("enter set:\n")
+    create_booster(db, setcode)
