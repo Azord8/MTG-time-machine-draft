@@ -7,8 +7,8 @@ from os import environ
 app = Flask(__name__)
 # Settings for your app
 base_discord_api_url = 'https://discordapp.com/api'
-client_id = r'test'  # Get from https://discordapp.com/developers/applications
-client_secret = r'test'
+client_id = os.environ['client_id']   # Get from https://discordapp.com/developers/applications
+client_secret = os.environ['client_secret']
 redirect_uri = 'https://mtg-time-machine-draft.herokuapp.com/oauth_callback'
 scope = ['identify', 'email']
 token_url = 'https://discordapp.com/api/oauth2/token'
