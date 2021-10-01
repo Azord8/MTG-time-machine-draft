@@ -6,7 +6,8 @@ import os
 app = Flask(__name__)
 # Settings for your app
 base_discord_api_url = 'https://discordapp.com/api'
-
+client_id = r'test'  # Get from https://discordapp.com/developers/applications
+client_secret = r'test'
 redirect_uri = 'https://mtg-time-machine-draft.herokuapp.com/oauth_callback'
 scope = ['identify', 'email']
 token_url = 'https://discordapp.com/api/oauth2/token'
@@ -67,8 +68,7 @@ def profile():
 
 
 if __name__ == '__main__':
-    port = process.env.PORT or 5000
     # Threaded option to enable multiple instances for multiple user access support
-    app.run(threaded=True, port=port)
+    app.run(threaded=True, port=33507)
 
 
