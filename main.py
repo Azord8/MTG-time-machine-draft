@@ -66,7 +66,7 @@ def check_setup():
         config = json.load(g)
         f = open("config.json", "w+")
         f.write(json.dumps(config))
-    f = open("config.json", "r+")
+    h = open("config.json", "r+")
     config = json.load(f)
     db = Mongo.get_db(MongoDBconnectString)
 
@@ -81,7 +81,7 @@ def check_setup():
                 Mongo.load_sheet(db, set)
                 Mongo.load_cards(db, set)
         config['First time setup'] = "False"
-        f.write(json.dumps(config))
+        h.write(json.dumps(config))
         return "database setup!"
 
     if config['First time setup'] == "Debug":
