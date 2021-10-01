@@ -73,7 +73,7 @@ def check_setup():
 
     if config['First time setup'] == "True":
         # fetch all sets
-        Mongo.import_all_sets()
+        # Mongo.import_all_sets()
 
         for filename in os.listdir("sets"):
             with open(os.path.join("sets/", filename), 'r') as f:
