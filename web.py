@@ -14,6 +14,7 @@ scope = ['identify', 'email']
 token_url = 'https://discordapp.com/api/oauth2/token'
 authorize_url = 'https://discordapp.com/api/oauth2/authorize'
 app.secret_key = os.urandom(24)
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 # A welcome message to test our server
