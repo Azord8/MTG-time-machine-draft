@@ -68,7 +68,8 @@ def profile():
 
 
 if __name__ == '__main__':
+    port = process.env.PORT or 5000
     # Threaded option to enable multiple instances for multiple user access support
-    app.run(threaded=True, port=33507)
+    app.run(threaded=True, port=port)
 
 
