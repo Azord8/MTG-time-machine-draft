@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, session
 from requests_oauthlib import OAuth2Session
 import os
 from os import environ
-import Mongo
+import main
 
 app = Flask(__name__)
 # Settings for your app
@@ -26,7 +26,7 @@ def index():
 
 @app.route('/setup')
 def setup():
-    test = check_setup()
+    test = main.check_setup()
     return "<h1>" + test + "</h1>"
 
 
