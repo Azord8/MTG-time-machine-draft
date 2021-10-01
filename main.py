@@ -64,11 +64,12 @@ def create_booster(db, setcode):
 def check_setup():
     if not exists("config.json"):
         g = open("config-sample.json", "r+")
-        config = json.load(g)
-        f = open("config.json", "w+")
-        f.write(json.dumps(config))
-    else:
-        f = open("config.json", "r+")
+        configDefaults = json.load(g)
+        f = open("config.json", "w")
+        f.write(json.dumps(configDefaults))
+        f.close()
+
+    f = open("config.json", "r+")
     config = json.load(f)
     db = Mongo.get_db(MongoDBconnectString)
 
