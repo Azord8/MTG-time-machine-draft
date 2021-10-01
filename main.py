@@ -58,7 +58,7 @@ def create_booster(db, setcode):
     for i in createdBooster:
         card = db.Cards.find_one({'_id': i})
         createdCards.append([i, card['Name']])
-    pprint(createdCards)
+    return createdCards
 
 
 def check_setup():
@@ -74,14 +74,14 @@ def check_setup():
 
     if config['First time setup'] == "True":
         # fetch all sets
-        # Mongo.import_all_sets()
+        Mongo.import_all_sets()
 
-        # for filename in os.listdir("sets"):
-        #     with open(os.path.join("sets/", filename), 'r') as f:
-        #         set = Mongo.import_set_from_file(f)
-        #         Mongo.load_set(db, set)
-        #         Mongo.load_sheet(db, set)
-        #         Mongo.load_cards(db, set)
+        for filename in os.listdir("sets"):
+            with open(os.path.join("sets/", filename), 'r') as f:
+                set = Mongo.import_set_from_file(f)
+                Mongo.load_set(db, set)
+                Mongo.load_sheet(db, set)
+                Mongo.load_cards(db, set)
         config['First time setup'] = "False"
         f.write(json.dumps(config))
         return "database setup!"

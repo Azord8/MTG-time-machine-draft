@@ -1,9 +1,11 @@
 # app.py
-from flask import Flask, request, session
+from flask import Flask, request, session, jsonify
 from requests_oauthlib import OAuth2Session
 import os
 from os import environ
 import main
+import Mongo
+
 
 app = Flask(__name__)
 # Settings for your app
@@ -28,6 +30,14 @@ def index():
 def setup():
     test = main.check_setup()
     return "<h1>" + test + "</h1>"
+
+
+@app.route('/booster')
+def booster():
+    # TODO Ajax call
+    db = Mongo.get_db()
+    booster = main.create_booster(db, '2ED')
+    return jsonify(booster)
 
 
 @app.route("/login")
