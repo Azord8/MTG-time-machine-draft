@@ -2,6 +2,7 @@ import Mongo
 from datetime import datetime
 import random
 import os
+from os.path import exists
 from pprint import pprint
 import json
 
@@ -60,6 +61,12 @@ def create_booster(db, setcode):
 
 
 def check_setup():
+    if not exists("config.json"):
+        g = open("config-sample.json", "r+")
+        config = json.load(g)
+        f = open("config.json", "w")
+        f.write(json.dumps(config))
+        f.close()
     f = open("config.json", "r+")
     config = json.load(f)
     db = Mongo.get_db(MongoDBconnectString)
