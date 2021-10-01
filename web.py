@@ -26,9 +26,8 @@ def index():
 
 @app.route('/setup')
 def setup():
-    # TODO first time setup
-
-    return "<h1>Welcome to our server !!</h1>"
+    test = check_setup()
+    return "<h1>" + test + "</h1>"
 
 
 @app.route("/login")
