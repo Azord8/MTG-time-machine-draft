@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, session
 from requests_oauthlib import OAuth2Session
 import os
 from os import environ
+import Mongo
 
 app = Flask(__name__)
 # Settings for your app
@@ -20,6 +21,13 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 # A welcome message to test our server
 @app.route('/')
 def index():
+    return "<h1>Welcome to our server !!</h1>"
+
+
+@app.route('/setup')
+def setup():
+    # TODO first time setup
+
     return "<h1>Welcome to our server !!</h1>"
 
 

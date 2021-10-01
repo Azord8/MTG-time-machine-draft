@@ -1,11 +1,11 @@
 import Mongo
-from pymongo import MongoClient
 from datetime import datetime
 import random
 import os
 from pprint import pprint
 import json
 
+MongoDBconnectString = os.environ['mongo_connect_string']
 
 def validate(date_text):
     try:
@@ -59,70 +59,71 @@ def create_booster(db, setcode):
     pprint(createdCards)
 
 
-client = MongoClient("127.0.0.1:27017")
-db = client['MTG_Draft']
-with open("config.json", "r+") as f:
+def check_setup():
+    f = open("config.json", "r+")
     config = json.load(f)
+    db = Mongo.get_db(MongoDBconnectString)
 
-
-if config['First time setup'] == "True":
-    # fetch all sets
-    Mongo.import_all_sets()
-
-    for filename in os.listdir("sets"):
-        with open(os.path.join("sets/", filename), 'r') as f:
-            set = Mongo.import_set_from_file(f)
-            Mongo.load_set(db, set)
-            Mongo.load_sheet(db, set)
-            Mongo.load_cards(db, set)
-    # TODO change config to show first time setup complete
-
-if config['First time setup'] == "Debug":
-    print('What function would you like to perform?\n'
-          '1: Import sets from mtgjson\n'
-          '2: Load all sets into database from files\n'
-          '3: Load all boosters into database from files\n'
-          '4: Update all sets\n'
-          '5: Load all sheets into database from files\n'
-          '6: Load all cards into database from files\n'
-          '7: Create booster')
-    val = input("choose function:")
-    if val == "1":
+    if config['First time setup'] == "True":
+        # fetch all sets
         Mongo.import_all_sets()
-    elif val == "2":
+
         for filename in os.listdir("sets"):
             with open(os.path.join("sets/", filename), 'r') as f:
                 set = Mongo.import_set_from_file(f)
                 Mongo.load_set(db, set)
-    elif val == "3":
-        for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
-                Mongo.load_booster(db, set)
-    elif val == '4':
-        for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
-                Mongo.update_set(db, set)
-    elif val == '5':
-        for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
                 Mongo.load_sheet(db, set)
-    elif val == '6':
-        for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
                 Mongo.load_cards(db, set)
-    elif val == '7':
-        date = input("enter year:\n")
-        date = validate(date)
+        config['First time setup'] = "False"
+        f.write(json.dumps(config))
+        return "database setup!"
+
+    if config['First time setup'] == "Debug":
+        print('What function would you like to perform?\n'
+              '1: Import sets from mtgjson\n'
+              '2: Load all sets into database from files\n'
+              '3: Load all boosters into database from files\n'
+              '4: Update all sets\n'
+              '5: Load all sheets into database from files\n'
+              '6: Load all cards into database from files\n'
+              '7: Create booster')
+        val = input("choose function:")
+        if val == "1":
+            Mongo.import_all_sets()
+        elif val == "2":
+            for filename in os.listdir("sets"):
+                with open(os.path.join("sets/", filename), 'r') as f:
+                    set = Mongo.import_set_from_file(f)
+                    Mongo.load_set(db, set)
+        elif val == "3":
+            for filename in os.listdir("sets"):
+                with open(os.path.join("sets/", filename), 'r') as f:
+                    set = Mongo.import_set_from_file(f)
+                    Mongo.load_booster(db, set)
+        elif val == '4':
+            for filename in os.listdir("sets"):
+                with open(os.path.join("sets/", filename), 'r') as f:
+                    set = Mongo.import_set_from_file(f)
+                    Mongo.update_set(db, set)
+        elif val == '5':
+            for filename in os.listdir("sets"):
+                with open(os.path.join("sets/", filename), 'r') as f:
+                    set = Mongo.import_set_from_file(f)
+                    Mongo.load_sheet(db, set)
+        elif val == '6':
+            for filename in os.listdir("sets"):
+                with open(os.path.join("sets/", filename), 'r') as f:
+                    set = Mongo.import_set_from_file(f)
+                    Mongo.load_cards(db, set)
+        elif val == '7':
+            date = input("enter year:\n")
+            date = validate(date)
+            find_sets(db, date.date().strftime("%Y-%m-%d"))
+            setcode = input("enter set:\n")
+            create_booster(db, setcode)
+
+    elif config['First time setup'] == "False":
+        date = datetime.strptime(config['Date'], "%Y-%m-%d")
         find_sets(db, date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
         create_booster(db, setcode)
-
-elif config['First time setup'] == "False":
-    date = datetime.strptime(config['Date'], "%Y-%m-%d")
-    find_sets(db, date.date().strftime("%Y-%m-%d"))
-    setcode = input("enter set:\n")
-    create_booster(db, setcode)

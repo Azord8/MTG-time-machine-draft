@@ -1,10 +1,11 @@
 from pymongo import errors
 import pymongo
+from pymongo import MongoClient
 import urllib3
 import json
 from os.path import exists
 import re
-
+from os import environ
 
 def import_all_sets():
     http = urllib3.PoolManager()
@@ -188,3 +189,9 @@ def update_set(db, set):
         print(code + "has nothing to update")
     else:
         print("problem with " + code)
+
+
+def get_db(MongoDBconnectString):
+    client = MongoClient(MongoDBconnectString)
+    db = client['MTG_Draft']
+    return db
