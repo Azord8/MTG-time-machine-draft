@@ -5,7 +5,7 @@ import urllib3
 import json
 from os.path import exists
 import re
-from os import environ
+
 
 def import_all_sets():
     http = urllib3.PoolManager()

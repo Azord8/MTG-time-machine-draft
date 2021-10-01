@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, session
 from requests_oauthlib import OAuth2Session
 import os
 from os import environ
@@ -79,5 +79,3 @@ def profile():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, host='0.0.0.0',  port=environ.get('PORT', 5000))
-
-
