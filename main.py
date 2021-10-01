@@ -67,7 +67,6 @@ def check_setup():
         configDefaults = json.load(g)
         f = open("config.json", "w")
         f.write(json.dumps(configDefaults))
-        f.close()
 
     f = open("config.json", "r+")
     config = json.load(f)
@@ -77,12 +76,12 @@ def check_setup():
         # fetch all sets
         # Mongo.import_all_sets()
 
-        for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
-                Mongo.load_set(db, set)
-                Mongo.load_sheet(db, set)
-                Mongo.load_cards(db, set)
+        # for filename in os.listdir("sets"):
+        #     with open(os.path.join("sets/", filename), 'r') as f:
+        #         set = Mongo.import_set_from_file(f)
+        #         Mongo.load_set(db, set)
+        #         Mongo.load_sheet(db, set)
+        #         Mongo.load_cards(db, set)
         config['First time setup'] = "False"
         f.write(json.dumps(config))
         return "database setup!"
