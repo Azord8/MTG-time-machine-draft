@@ -64,9 +64,8 @@ def check_setup():
     if not exists("config.json"):
         g = open("config-sample.json", "r+")
         config = json.load(g)
-        f = open("config.json", "w")
+        f = open("config.json", "w+")
         f.write(json.dumps(config))
-        f.close()
     f = open("config.json", "r+")
     config = json.load(f)
     db = Mongo.get_db(MongoDBconnectString)
