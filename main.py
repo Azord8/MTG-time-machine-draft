@@ -8,6 +8,7 @@ import json
 
 MongoDBconnectString = os.environ['mongo_connect_string']
 
+
 def validate(date_text):
     try:
         date = datetime.strptime(date_text, '%Y')
@@ -66,7 +67,8 @@ def check_setup():
         config = json.load(g)
         f = open("config.json", "w+")
         f.write(json.dumps(config))
-    h = open("config.json", "r+")
+    else:
+        f = open("config.json", "r+")
     config = json.load(f)
     db = Mongo.get_db(MongoDBconnectString)
 
@@ -81,7 +83,7 @@ def check_setup():
                 Mongo.load_sheet(db, set)
                 Mongo.load_cards(db, set)
         config['First time setup'] = "False"
-        h.write(json.dumps(config))
+        f.write(json.dumps(config))
         return "database setup!"
 
     if config['First time setup'] == "Debug":
