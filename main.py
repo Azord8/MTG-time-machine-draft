@@ -32,7 +32,8 @@ def find_sets(db, date):
             print("")
 
 
-def create_booster(db, setcode):
+def create_booster(setcode):
+    db = Mongo.get_db(MongoDBconnectString)
     boosters = db.Boosters.find_one({'_id': setcode})
     weights = []
     booster = []
@@ -128,10 +129,10 @@ def check_setup():
             date = validate(date)
             find_sets(db, date.date().strftime("%Y-%m-%d"))
             setcode = input("enter set:\n")
-            create_booster(db, setcode)
+            create_booster( setcode)
 
     elif config['First time setup'] == "False":
         date = datetime.strptime(config['Date'], "%Y-%m-%d")
         find_sets(db, date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
-        create_booster(db, setcode)
+        create_booster(setcode)
