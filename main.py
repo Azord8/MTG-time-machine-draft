@@ -75,14 +75,15 @@ def check_setup():
 
     if config['First time setup'] == "True":
         # fetch all sets
-        Mongo.import_all_sets()
+        # Mongo.import_all_sets()
 
         for filename in os.listdir("sets"):
             with open(os.path.join("sets/", filename), 'r') as f:
                 set = Mongo.import_set_from_file(f)
-                Mongo.load_set(db, set)
-                Mongo.load_sheet(db, set)
-                Mongo.load_cards(db, set)
+                # Mongo.load_set(db, set)
+                # Mongo.load_sheet(db, set)
+                # # Mongo.load_cards(db, set)
+                Mongo.load_booster(db, set)
         config['First time setup'] = "False"
         f.write(json.dumps(config))
         return "database setup!"
@@ -129,7 +130,7 @@ def check_setup():
             date = validate(date)
             find_sets(db, date.date().strftime("%Y-%m-%d"))
             setcode = input("enter set:\n")
-            create_booster( setcode)
+            create_booster(setcode)
 
     elif config['First time setup'] == "False":
         date = datetime.strptime(config['Date'], "%Y-%m-%d")
