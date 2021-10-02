@@ -19,6 +19,8 @@ def validate(date_text):
 
 def find_sets(db, date):
     sets = []
+    f = open("config.json", "r+")
+    config = json.load(f)
     if config['Online'] == "False":
         for set in db.Sets.find({'Release date': {'$lte': date}, 'Online only': {'$not': {'$eq': 'true'}}}):
             sets.append(set)
