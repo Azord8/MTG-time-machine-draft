@@ -27,7 +27,6 @@ def find_sets(date):
     else:
         for set in db.Sets.find({'Release date': {'$lte': date}}):
             sets.append(set)
-    # Prints in groups of five
     return sets
 
 
