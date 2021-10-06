@@ -38,7 +38,7 @@ def booster():
     f = open("config.json", "r")
     config = json.load(f)
     date = config['Date']
-    return jsonify(main.find_sets(date.date().strftime("%Y-%m-%d")))
+    return jsonify(main.find_sets(date.date().strptime("%Y-%m-%d")))
 
 
 @app.route('/Ajax-handler')
