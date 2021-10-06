@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, session, jsonify
+from flask import Flask, request, session, jsonify, render_template
 from requests_oauthlib import OAuth2Session
 import os
 from os import environ
@@ -36,6 +36,16 @@ def booster():
     # TODO Ajax call
     booster = main.create_booster('2ED')
     return jsonify(booster)
+
+
+@app.route('/Ajax-handler')
+def ajax():
+    return "test"
+
+
+@app.route('/Ajax-tester')
+def test():
+    return render_template('Ajax-tester.html')
 
 
 @app.route("/login")

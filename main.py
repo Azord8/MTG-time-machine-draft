@@ -80,8 +80,8 @@ def check_setup():
         # Mongo.import_all_sets()
 
         for filename in os.listdir("sets"):
-            with open(os.path.join("sets/", filename), 'r') as f:
-                set = Mongo.import_set_from_file(f)
+            with open(os.path.join("sets/", filename), 'r') as fileset:
+                set = Mongo.import_set_from_file(fileset)
                 # Mongo.load_set(db, set)
                 # Mongo.load_sheet(db, set)
                 # # Mongo.load_cards(db, set)
