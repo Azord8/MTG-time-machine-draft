@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth2Session
 import os
 from os import environ
 import main
+import json
 
 
 app = Flask(__name__)
@@ -34,8 +35,10 @@ def setup():
 @app.route('/booster')
 def booster():
     # TODO Ajax call
-    booster = main.create_booster('2ED')
-    return jsonify(booster)
+    f = open("config.json", "r")
+    config = json.load(f)
+    date = config['Date']
+    return jsonify(main.find_sets(date.date().strftime("%Y-%m-%d")))
 
 
 @app.route('/Ajax-handler')

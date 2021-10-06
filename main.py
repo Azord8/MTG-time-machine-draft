@@ -3,7 +3,6 @@ from datetime import datetime
 import random
 import os
 from os.path import exists
-from pprint import pprint
 import json
 
 MongoDBconnectString = os.environ['mongo_connect_string']
@@ -17,7 +16,8 @@ def validate(date_text):
     return date
 
 
-def find_sets(db, date):
+def find_sets(date):
+    db = Mongo.get_db(MongoDBconnectString)
     sets = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -28,10 +28,7 @@ def find_sets(db, date):
         for set in db.Sets.find({'Release date': {'$lte': date}}):
             sets.append(set)
     # Prints in groups of five
-    for index in range(len(sets)):
-        print(sets[index]['_id'], end=", ")
-        if index % 5 == 0:
-            print("")
+    return sets
 
 
 def create_booster(setcode):
@@ -130,12 +127,12 @@ def check_setup():
         elif val == '7':
             date = input("enter year:\n")
             date = validate(date)
-            find_sets(db, date.date().strftime("%Y-%m-%d"))
+            find_sets(date.date().strftime("%Y-%m-%d"))
             setcode = input("enter set:\n")
             create_booster(setcode)
 
     elif config['First time setup'] == "False":
         date = datetime.strptime(config['Date'], "%Y-%m-%d")
-        find_sets(db, date.date().strftime("%Y-%m-%d"))
+        find_sets(date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
         create_booster(setcode)
