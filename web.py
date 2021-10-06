@@ -5,6 +5,7 @@ import os
 from os import environ
 import main
 import json
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -37,8 +38,8 @@ def booster():
     # TODO Ajax call
     f = open("config.json", "r")
     config = json.load(f)
-    date = config['Date']
-    return jsonify(main.find_sets(date.date().strptime("%Y-%m-%d")))
+    date = datetime.strptime(config['Date'], "%Y-%m-%d")
+    return jsonify(main.find_sets(date))
 
 
 @app.route('/Ajax-handler')
