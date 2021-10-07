@@ -5,7 +5,12 @@ import os
 from os.path import exists
 import json
 
-MongoDBconnectString = os.environ['mongo_connect_string']
+if 'mongo_connect_string' in os.environ:
+    MongoDBconnectString = os.environ['mongo_connect_string']
+    local = False
+else:
+    MongoDBconnectString = ""
+    local = True
 
 
 def validate(date_text):
@@ -17,7 +22,7 @@ def validate(date_text):
 
 
 def find_sets(date):
-    db = Mongo.get_db(MongoDBconnectString)
+    db = Mongo.get_db(MongoDBconnectString, local)
     sets = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -31,7 +36,7 @@ def find_sets(date):
 
 
 def create_booster(setcode):
-    db = Mongo.get_db(MongoDBconnectString)
+    db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})
     weights = []
     booster = []
@@ -69,7 +74,7 @@ def check_setup():
 
     f = open("config.json", "r+")
     config = json.load(f)
-    db = Mongo.get_db(MongoDBconnectString)
+    db = Mongo.get_db(MongoDBconnectString, local)
 
     if config['First time setup'] == "True":
         # fetch all sets

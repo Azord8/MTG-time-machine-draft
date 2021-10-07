@@ -191,7 +191,13 @@ def update_set(db, set):
         print("problem with " + code)
 
 
-def get_db(MongoDBconnectString):
-    client = MongoClient(MongoDBconnectString)
-    db = client['MTG_Draft']
-    return db
+def get_db(MongoDBconnectString, local):
+    if local:
+        client = MongoClient("127.0.0.1:27017")
+        db = client['MTG_Draft']
+        return db
+    else:
+        client = MongoClient(MongoDBconnectString)
+        db = client['MTG_Draft']
+        return db
+
