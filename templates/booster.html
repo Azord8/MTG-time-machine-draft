@@ -8,8 +8,6 @@
         console.log("test");
         let host = window.location.origin;
         $.ajax({
-            contentType: 'application/json;charset=UTF-8',
-            dataType: "json",
             type:"GET",
             url: host + "/Ajax-handler",
             data: {"action": "get_booster", "setcode": setcode},
