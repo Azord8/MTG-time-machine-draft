@@ -1,11 +1,10 @@
 # app.py
 from flask import Flask, request, session, jsonify, render_template
 from requests_oauthlib import OAuth2Session
-import os
 from os import environ
+import os
 import main
 import json
-from datetime import datetime
 
 
 app = Flask(__name__)
@@ -45,9 +44,9 @@ def booster():
 
 @app.route('/Ajax-handler')
 def ajax():
-    action = request.data['action']
+    action = request.json['action']
     if action == 'get_booster':
-        return main.create_booster(request.data['setcode'])
+        return main.create_booster(request.json['setcode'])
     return "test"
 
 
