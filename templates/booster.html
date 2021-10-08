@@ -1,12 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    function getSet(setcode){
+        console.log("test");
+        let host = window.location.origin;
+        $.ajax({
+            type:"GET",
+            url: host + "/Ajax-handler",
+            data: {"action": "get_booster", "setcode": setcode},
+            success: function(data){
+                console.log(data);
+                $('.results').text(data);
+            }
+        })
+    }
+    </script>
     <meta charset="UTF-8">
     <title>Booster</title>
 </head>
 <body>
 {%for item in sets%}
-    <button class="set-button">{{item.Name}}</button>
+    <button class="set-button" value="{{item._id}}" onclick="getSet(this.value)">{{item.Name}}</button>
 {%endfor%}
+<div id="results"></div>
 </body>
 </html>

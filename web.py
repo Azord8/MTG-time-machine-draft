@@ -45,6 +45,9 @@ def booster():
 
 @app.route('/Ajax-handler')
 def ajax():
+    action = request.data['action']
+    if action == 'get_booster':
+        return main.create_booster(request.data['setcode'])
     return "test"
 
 
