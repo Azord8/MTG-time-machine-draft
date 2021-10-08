@@ -46,7 +46,7 @@ def booster():
 def ajax():
     action = request.args['action']
     if action == 'get_booster':
-        return main.create_booster(request.args['setcode'])
+        return json.dumps(main.create_booster(request.args['setcode']))
     return "test"
 
 
