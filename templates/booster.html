@@ -9,13 +9,17 @@
         let host = window.location.origin;
         $.ajax({
             contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
             type:"GET",
             url: host + "/Ajax-handler",
             data: {"action": "get_booster", "setcode": setcode},
             success: function(data){
                 console.log(data);
                 $('.results').text(data);
-            }
+            },
+            error: function (e) {
+                console.log(e); // logging the error object to console
+            },
         })
     }
     </script>
