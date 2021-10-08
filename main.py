@@ -38,6 +38,7 @@ def find_sets(date):
 def create_booster(setcode):
     db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})
+    print(boosters)
     weights = []
     booster = []
     for i in range(len(boosters['Boosters'])):
