@@ -37,7 +37,7 @@ def find_sets(date):
 
 def create_booster(setcode):
     db = Mongo.get_db(MongoDBconnectString, local)
-    boosters = db.Boosters.find_one({'_id': setcode})
+    boosters = db.Boosters.find_one({'_id': "2ED"})
     print(setcode)
     weights = []
     booster = []
