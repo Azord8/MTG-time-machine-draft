@@ -35,6 +35,20 @@ def find_sets(date):
     return sets
 
 
+def find_boosters(date):
+    sets = find_sets(date)
+    db = Mongo.get_db(MongoDBconnectString, local)
+    boosters = []
+    f = open("config.json", "r+")
+    config = json.load(f)
+    for set in sets:
+        tempBooster = {'Name': set['Name'], '_id': set['_id']}
+        booster = db.Boosters.find_one({'_id': set['_id']})
+        if booster is not None:
+            boosters.append(tempBooster)
+    return boosters
+
+
 def create_booster(setcode):
     db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})

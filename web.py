@@ -43,7 +43,7 @@ def booster():
     config = json.load(f)
     # date = datetime.strptime(config['Date'], "%Y-%m-%d")
     # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
-    return render_template('booster.html', sets=main.find_sets(config['Date']))
+    return render_template('booster.html', sets=main.find_boosters(config['Date']))
 
 
 @app.route('/Ajax-handler')
