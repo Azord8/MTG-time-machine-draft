@@ -38,7 +38,7 @@ def find_sets(date):
 def create_booster(setcode):
     db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})
-    print(setcode)
+    print(boosters)
     weights = []
     booster = []
     for i in range(len(boosters['Boosters'])):
@@ -70,6 +70,7 @@ def check_setup():
     if not exists("config.json"):
         g = open("config-sample.json", "r+")
         configDefaults = json.load(g)
+        print("GET OUT!")
         f = open("config.json", "w")
         f.write(json.dumps(configDefaults))
 
@@ -84,9 +85,9 @@ def check_setup():
         for filename in os.listdir("sets"):
             with open(os.path.join("sets/", filename), 'r') as fileset:
                 set = Mongo.import_set_from_file(fileset)
-                # Mongo.load_set(db, set)
-                # Mongo.load_sheet(db, set)
-                # # Mongo.load_cards(db, set)
+                Mongo.load_set(db, set)
+                Mongo.load_sheet(db, set)
+                Mongo.load_cards(db, set)
                 Mongo.load_booster(db, set)
         config['First time setup'] = "False"
         f.write(json.dumps(config))
