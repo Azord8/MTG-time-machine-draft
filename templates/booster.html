@@ -12,7 +12,13 @@
             url: host + "/Ajax-handler",
             data: {"action": "get_booster", "setcode": setcode},
             success: function(data){
-                $('#results').innerHTML.text(data);
+                console.log(data);
+                let obj = JSON.parse(data);
+                result = "";
+                for (const objKey in obj) {
+                    result += obj[objKey] +  '\n' ;
+                }
+                $('#results').text(result);
 
             },
             error: function (e) {
@@ -28,6 +34,7 @@
 {%for item in sets%}
     <button class="set-button" value="{{item._id}}" onclick="getSet(this.value)">{{item.Name}}</button>
 {%endfor%}
-<div id="results"></div>
+<pre><div id="results"></div></pre>
+
 </body>
 </html>
