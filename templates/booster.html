@@ -12,8 +12,7 @@
             url: host + "/Ajax-handler",
             data: {"action": "get_booster", "setcode": setcode},
             success: function(data){
-                console.log(data);
-                $('#results').text(data);
+                $('#results').innerHTML.text(data);
             },
             error: function (e) {
                 console.log(e); // logging the error object to console
