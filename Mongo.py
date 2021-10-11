@@ -1,10 +1,12 @@
 from pymongo import errors
-import pymongo
 from pymongo import MongoClient
+from os.path import exists
+import pymongo
 import urllib3
 import json
-from os.path import exists
 import re
+import string
+import random
 
 
 def import_all_sets():
@@ -24,15 +26,6 @@ def import_set_from_file(f):
     data = json.load(f)
     return data
 
-def load_profile(db, id):
-    if 'isForeignOnly' in set:
-        if set['isForeignOnly']:
-            return
-    setinstance = {"_id": id,
-                   "Name": name,
-                   "Block": block,
-                   "Release date": date,
-                   "Online only": onlineonly}
 
 def load_set(db, set):
     # initial validation
@@ -210,13 +203,28 @@ def get_db(MongoDBconnectString, local):
         db = client['MTG_Draft']
         return db
 
-def add_cards(db, userID, transactionKey, transactionVal):
-    #Inventory = {'_id': userID, 'Cards': "", 'Points': ""}
 
-    if transactionKey == "Card":
-        db.Inventory.update({'_id': userID}, {'$set': {"Cards": transactionVal}}, {'upsert': True})
-    if transactionKey == "Point":
-        db.Inventory.update({'_id': userID}, {'$set': {"Points": transactionVal}}, {'upsert': True})
+def create_user(db, userID):
+    user = {'_id': userID}
+    db.Users.insert_one(user)
 
 
-
+def create_group(db, userID):
+    user = db.Users.find_one({'_id': userID})
+    groups = user.get('Groups', [])
+    if len(groups) > 10:
+        print("You have already created 10 groups")
+        return
+    groupID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+    Group = {'_id': groupID, 'Owner': userID, 'Members': [userID], 'config': False}
+    duplicate = True
+    while duplicate:
+        try:
+            result = db.Groups.insert_one(Group)
+            print(result.inserted_id)
+            duplicate = False
+            groups.append(Group['_id'])
+            db.Users.update({'_id': userID}, {"$set": {'Groups': groups}})
+        except pymongo.errors.DuplicateKeyError:
+            print(Group['_id'] + " already exists")
+            Group['_id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
