@@ -12,6 +12,8 @@ else:
     MongoDBconnectString = ""
     local = True
 
+db = Mongo.get_db(MongoDBconnectString, local)
+
 
 def validate(date_text):
     try:
@@ -22,7 +24,6 @@ def validate(date_text):
 
 
 def find_sets(date):
-    db = Mongo.get_db(MongoDBconnectString, local)
     sets = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -37,7 +38,7 @@ def find_sets(date):
 
 def find_boosters(date):
     sets = find_sets(date)
-    db = Mongo.get_db(MongoDBconnectString, local)
+
     boosters = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -50,7 +51,6 @@ def find_boosters(date):
 
 
 def create_booster(setcode):
-    db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})
     print(boosters)
     print(setcode)
@@ -91,7 +91,6 @@ def check_setup():
 
     f = open("config.json", "r+")
     config = json.load(f)
-    db = Mongo.get_db(MongoDBconnectString, local)
 
     if config['First time setup'] == "True":
         # fetch all sets
@@ -157,3 +156,11 @@ def check_setup():
         find_sets(date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
         create_booster(setcode)
+
+
+def create_dummy_data():
+    # Mongo.create_user(db, 'Dummy')
+    Mongo.create_group(db, 'Dummy')
+
+
+create_dummy_data()
