@@ -1,10 +1,12 @@
 from pymongo import errors
-import pymongo
 from pymongo import MongoClient
+from os.path import exists
+import pymongo
 import urllib3
 import json
-from os.path import exists
 import re
+import string
+import random
 
 
 def import_all_sets():
@@ -201,3 +203,14 @@ def get_db(MongoDBconnectString, local):
         db = client['MTG_Draft']
         return db
 
+
+def create_user(db, userID):
+    user = {'_id': userID, 'Groups': "", 'Boosters': "", 'Decklists': ""}
+    db.Users.insert_one(user)
+
+
+def create_group(db, userID):
+    groupID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+    Group = {'_id': groupID, 'Owner': userID, 'Members': "", 'config': False}
+    result = db.Groups.insert_one(Group)
+    print(result)

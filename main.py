@@ -157,3 +157,11 @@ def check_setup():
         find_sets(date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
         create_booster(setcode)
+
+
+def create_dummy_data():
+    db = Mongo.get_db(MongoDBconnectString, local)
+    Mongo.create_group(db, "Dummy")
+
+
+create_dummy_data()
