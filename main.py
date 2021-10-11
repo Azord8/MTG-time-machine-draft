@@ -12,6 +12,8 @@ else:
     MongoDBconnectString = ""
     local = True
 
+db = Mongo.get_db(MongoDBconnectString, local)
+
 
 def validate(date_text):
     try:
@@ -22,7 +24,6 @@ def validate(date_text):
 
 
 def find_sets(date):
-    db = Mongo.get_db(MongoDBconnectString, local)
     sets = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -37,7 +38,6 @@ def find_sets(date):
 
 def find_boosters(date):
     sets = find_sets(date)
-    db = Mongo.get_db(MongoDBconnectString, local)
     boosters = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -50,7 +50,6 @@ def find_boosters(date):
 
 
 def create_booster(setcode):
-    db = Mongo.get_db(MongoDBconnectString, local)
     boosters = db.Boosters.find_one({'_id': setcode})
     print(boosters)
     print(setcode)
@@ -81,6 +80,13 @@ def create_booster(setcode):
     return createdCards
 
 
+def create_draft_booster(userID, groupID, setcode):
+    # TODO create way to store placeholder booster for drafts
+    # so that user can't see what his next stored booster contains
+    booster = create_booster(setcode)
+    Mongo.store_draft_booster(db, userID, booster, groupID)
+
+
 def check_setup():
     if not exists("config.json"):
         g = open("config-sample.json", "r+")
@@ -91,7 +97,6 @@ def check_setup():
 
     f = open("config.json", "r+")
     config = json.load(f)
-    db = Mongo.get_db(MongoDBconnectString, local)
 
     if config['First time setup'] == "True":
         # fetch all sets
@@ -157,3 +162,12 @@ def check_setup():
         find_sets(date.date().strftime("%Y-%m-%d"))
         setcode = input("enter set:\n")
         create_booster(setcode)
+
+
+def create_dummy_data():
+    Mongo.create_user(db, 'Dummy')
+    Mongo.create_group(db, 'Dummy')
+    create_draft_booster('Dummy', '2WN6SIM', '2ED')
+
+
+
