@@ -228,3 +228,11 @@ def create_group(db, userID):
         except pymongo.errors.DuplicateKeyError:
             print(Group['_id'] + " already exists")
             Group['_id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+
+
+def store_draft_booster(db, userID, booster, groupID):
+    user = db.Users.find_one({'_id': userID})
+    boosters = user.get('Boosters', [])
+    boosters.append({'Booster': booster, 'Group': groupID})
+    db.Users.update({'_id': userID}, {'$set': {'Boosters': boosters}})
+

@@ -81,6 +81,11 @@ def create_booster(setcode):
     return createdCards
 
 
+def create_draft_booster(userID, groupID, setcode):
+    booster = create_booster(setcode)
+    Mongo.store_draft_booster(db, userID, booster, groupID)
+
+
 def check_setup():
     if not exists("config.json"):
         g = open("config-sample.json", "r+")
@@ -159,8 +164,8 @@ def check_setup():
 
 
 def create_dummy_data():
-    # Mongo.create_user(db, 'Dummy')
+    Mongo.create_user(db, 'Dummy')
     Mongo.create_group(db, 'Dummy')
 
 
-create_dummy_data()
+create_draft_booster('Dummy', '2WN6SIM', '2ED')
