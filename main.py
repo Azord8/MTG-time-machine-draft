@@ -14,6 +14,7 @@ else:
 
 db = Mongo.get_db(MongoDBconnectString, local)
 
+
 def validate(date_text):
     try:
         date = datetime.strptime(date_text, '%Y')
