@@ -30,11 +30,13 @@
 
     function saveCards(cards) {
         let host = window.location.origin;
+        //let card_arr = cards.split(",");
         $.ajax({
             type: "GET",
             url: host + "/Ajax-handler",
             data: {"action": "save_cards", "cards": cards},
-            success: function () {
+            success: function (data) {
+                console.log(data)
                 console.log("Cards Saved!");
             }
         })

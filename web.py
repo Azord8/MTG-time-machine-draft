@@ -54,7 +54,7 @@ def ajax():
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
     if action == 'save_cards':
-        return Mongo.add_cards(main.db, )
+        return Mongo.add_cards(main.db, 'Dummy', "Card", request.args['cards'])
     return "test"
 
 

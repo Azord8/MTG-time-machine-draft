@@ -159,8 +159,8 @@ def check_setup():
 
 
 def create_dummy_data():
-    # Mongo.create_user(db, 'Dummy')
+    Mongo.create_user(db, 'Dummy')
     Mongo.create_group(db, 'Dummy')
 
 
-create_dummy_data()
+#create_dummy_data()
