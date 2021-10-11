@@ -3,6 +3,8 @@ from flask import Flask, request, session, jsonify, render_template
 from requests_oauthlib import OAuth2Session
 from os import environ
 import os
+
+import Mongo
 import main
 import json
 
@@ -51,6 +53,8 @@ def ajax():
     action = request.args['action']
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
+    if action == 'save_cards':
+        return Mongo.add_cards(main.db, )
     return "test"
 
 
@@ -99,10 +103,11 @@ def profile():
     Example profile page to demonstrate how to pull the user information
     once we have a valid access token after all OAuth negotiation.
     """
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
+    #discord = OAuth2Session(client_id, token=session['discord_token'])
+    #response = discord.get(base_discord_api_url + '/users/@me')
     # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
-    return 'Profile: %s' % response.json()['id']
+
+    return render_template('profile.html')
 
 
 if __name__ == '__main__':

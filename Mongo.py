@@ -24,6 +24,15 @@ def import_set_from_file(f):
     data = json.load(f)
     return data
 
+def load_profile(db, id):
+    if 'isForeignOnly' in set:
+        if set['isForeignOnly']:
+            return
+    setinstance = {"_id": id,
+                   "Name": name,
+                   "Block": block,
+                   "Release date": date,
+                   "Online only": onlineonly}
 
 def load_set(db, set):
     # initial validation
@@ -200,4 +209,14 @@ def get_db(MongoDBconnectString, local):
         client = MongoClient(MongoDBconnectString)
         db = client['MTG_Draft']
         return db
+
+def add_cards(db, userID, transactionKey, transactionVal):
+    #Inventory = {'_id': userID, 'Cards': "", 'Points': ""}
+
+    if transactionKey == "Card":
+        db.Inventory.update({'_id': userID}, {'$set': {"Cards": transactionVal}}, {'upsert': True})
+    if transactionKey == "Point":
+        db.Inventory.update({'_id': userID}, {'$set': {"Points": transactionVal}}, {'upsert': True})
+
+
 

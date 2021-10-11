@@ -26,6 +26,19 @@
             },
         })
     }
+
+
+    function saveCards(cards) {
+        let host = window.location.origin;
+        $.ajax({
+            type: "GET",
+            url: host + "/Ajax-handler",
+            data: {"action": "save_cards", "cards": cards},
+            success: function () {
+                console.log("Cards Saved!");
+            }
+        })
+    }
     </script>
     <meta charset="UTF-8">
     <title>Booster</title>
@@ -35,6 +48,9 @@
     <button class="set-button" value="{{item._id}}" onclick="getSet(this.value)">{{item.Name}}</button>
 {%endfor%}
 <pre><div id="results"></div></pre>
+<br>
+<br>
+<button class="set_button" value="Save" onclick="saveCards(result)">Save To Profile</button>
 
 </body>
 </html>

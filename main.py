@@ -12,6 +12,7 @@ else:
     MongoDBconnectString = ""
     local = True
 
+db = Mongo.get_db(MongoDBconnectString, local)
 
 def validate(date_text):
     try:
