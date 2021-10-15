@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+
+    <script>
+        function createGroup(){
+            let host = window.location.origin;
+        $.ajax({
+            type:"GET",
+            url: host + "/Ajax-handler",
+            data: {"action": "create_group", "id": {{id}}},
+            success: function(data){
+                console.log(data);
+                let result = JSON.parse(data);
+                $('#results').text(result);
+
+            },
+            error: function (e) {
+                console.log(e); // logging the error object to console
+            },
+        })
+        }
+    </script>
+</head>
+<body>
+<h1>Your profile id is {{ id }}</h1>
+<button onclick="createGroup()">Create Group</button>
+<input type="text"><button  onclick="joinGroup()">Join Group</button>
+<div id="results"></div>
+</body>
+</html>

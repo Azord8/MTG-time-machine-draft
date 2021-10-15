@@ -204,14 +204,29 @@ def get_db(MongoDBconnectString, local):
         return db
 
 
+# creates user object, initially has no fields other than id
+# user object:
+#   _id:            userID, should be the discord user ID when that is set up
+#   Groups:         What groups this user is a member of
+#   Owned groups:   What groups this user owns
+#   Boosters:       What boosters are waiting for them, this includes unopened boosters
+#   decks:          Not implemented currently
 def create_user(db, userID):
     user = {'_id': userID}
     db.Users.insert_one(user)
 
 
+# creates a group object
+# group object:
+#   _id:            7 character alphanumeric ID
+#   Owner:          userID of creator of group
+#   Members:        array of userIDs of members of this group
+#   config:         game config variables, false if no customization
 def create_group(db, userID):
-    user = db.Users.find_one({'_id': userID})
+    user = find_user(db, userID)
     groups = user.get('Groups', [])
+    owned = user.get('Owned groups', [])
+    # limit to ten groups for now
     if len(groups) > 10:
         print("You have already created 10 groups")
         return
@@ -221,10 +236,63 @@ def create_group(db, userID):
     while duplicate:
         try:
             result = db.Groups.insert_one(Group)
-            print(result.inserted_id)
             duplicate = False
             groups.append(Group['_id'])
-            db.Users.update({'_id': userID}, {"$set": {'Groups': groups}})
+            owned.append(Group['id'])
+            db.Users.update({'_id': userID}, {"$set": {'Groups': groups, 'Owned groups': owned}})
+            return result.inserted_id
         except pymongo.errors.DuplicateKeyError:
             print(Group['_id'] + " already exists")
             Group['_id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+
+
+# Will store a single draft booster.
+# If the booster is not passed, it will store a placeholder booster to be created later
+# This method does not care if the user has existing boosters
+# Draft booster object
+#   Set:            setcode of the booster
+#   Booster:        array of all the cards in the booster, missing if the booster hasn't been opened yet
+#   Group:          Group this booster has been drafted for
+#   Origin:         userID of the drafter
+def store_draft_booster(db, userID, groupID, setcode, booster=None):
+    user = find_user(db, userID)
+    boosters = user.get('Boosters', [])
+    if booster is not None:
+        boosters.append({'Set': setcode, 'Booster': booster, 'Group': groupID, "Origin": userID})
+    else:
+        boosters.append({'Set': setcode, 'Group': groupID, "Origin": userID})
+    db.Users.update({'_id': userID}, {'$set': {'Boosters': boosters}})
+
+
+# Will find first instance of a booster for one user in one group.
+# Or false if none found, or none with the provided groupID
+def find_booster(db, userID, groupID):
+    user = find_user(db, userID)
+    boosters = user.get('Boosters')
+    if boosters is not None:
+        for i in boosters:
+            if groupID in i['Booster']:
+                return i
+        return False
+    return False
+
+
+def find_user(db, userID):
+    result = db.Users.find_one({'_id': userID})
+    return result
+
+
+def find_group(db, groupID):
+    result = db.Groups.find_one({'_id': groupID})
+    return result
+
+
+# search group for open booster with groupID
+def has_open_boosters(db, origin, groupID):
+    group = find_group(db, groupID)
+    for userID in group['Members']:
+        member = find_user(db, userID)
+        for booster in member['Boosters']:
+            if booster['Group'] is groupID and booster['Origin'] is origin:
+                return True
+    return False
