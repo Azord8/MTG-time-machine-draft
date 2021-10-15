@@ -195,6 +195,3 @@ def create_dummy_data():
     Mongo.create_user(db, 'Dummy')
     Mongo.create_group(db, 'Dummy')
     create_draft_booster(1, 'Dummy', '2WN6SIM', ['2ED'])
-
-
-create_draft_booster(1, 'Dummy', '2WN6SIM', ['2ED'])
