@@ -105,7 +105,7 @@ def profile():
     response = discord.get(base_discord_api_url + '/users/@me')
     # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
     # return 'Profile: %s' % response.json()['id']
-    return render_template('booster.html', id= response.json()['id'])
+    return render_template('profile.html', id=response.json()['id'])
 
 
 if __name__ == '__main__':
