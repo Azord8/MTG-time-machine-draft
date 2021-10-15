@@ -38,7 +38,6 @@ def find_sets(date):
 
 def find_boosters(date):
     sets = find_sets(date)
-
     boosters = []
     f = open("config.json", "r+")
     config = json.load(f)
@@ -81,9 +80,15 @@ def create_booster(setcode):
     return createdCards
 
 
-def create_draft_booster(userID, groupID, setcode):
-    booster = create_booster(setcode)
-    Mongo.store_draft_booster(db, userID, booster, groupID)
+def create_draft_booster(amount, userID, groupID, setcodes):
+    existingBooster = Mongo.has_open_boosters(db, userID, groupID)
+    if existingBooster:
+        print("already have existing booster for this group")
+    else:
+        booster = create_booster(setcodes[0])
+        Mongo.store_draft_booster(db, userID, groupID, setcodes[0], booster)
+        for i in range(1, amount):
+            Mongo.store_draft_booster(db, userID, groupID, setcodes[i])
 
 
 def check_setup():
@@ -163,9 +168,27 @@ def check_setup():
         create_booster(setcode)
 
 
+# handling drafting a booster and passing it to the next member
+def draft_booster(userID, draftbooster, card):
+    booster = draftbooster['booster']
+    groupID = booster['Group']
+    existingbooster = Mongo.has_open_boosters(db, userID, groupID)
+    if existingbooster is not False:
+        if existingbooster['Booster'] is booster:
+            del booster[card]
+#             handle adding card here
+            if booster:
+                group = Mongo.find_group(db, groupID)
+                members = group['members']
+                if members.index(userID) is len(members):
+                    
+
+
+
 def create_dummy_data():
     Mongo.create_user(db, 'Dummy')
     Mongo.create_group(db, 'Dummy')
+    create_draft_booster(1, 'Dummy', '2WN6SIM', ['2ED'])
 
 
-create_draft_booster('Dummy', '2WN6SIM', '2ED')
+create_draft_booster(1, 'Dummy', '2WN6SIM', ['2ED'])
