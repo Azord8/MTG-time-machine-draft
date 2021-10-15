@@ -238,7 +238,7 @@ def create_group(db, userID):
             result = db.Groups.insert_one(Group)
             duplicate = False
             groups.append(Group['_id'])
-            owned.append(Group['id'])
+            owned.append(Group['_id'])
             db.Users.update({'_id': userID}, {"$set": {'Groups': groups, 'Owned groups': owned}})
             return result.inserted_id
         except pymongo.errors.DuplicateKeyError:
