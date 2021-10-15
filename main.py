@@ -181,7 +181,13 @@ def draft_booster(userID, draftbooster, card):
                 group = Mongo.find_group(db, groupID)
                 members = group['members']
                 if members.index(userID) is len(members):
-                    
+                    pass
+
+
+def first_time_user(userID):
+    Mongo.create_user(db, userID)
+    result = Mongo.create_group(db, userID)
+    return result
 
 
 

@@ -51,6 +51,8 @@ def ajax():
     action = request.args['action']
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
+    elif action == 'create_group':
+        return json.dumps(main.first_time_user(request.args['id']))
     return "test"
 
 
@@ -102,7 +104,8 @@ def profile():
     discord = OAuth2Session(client_id, token=session['discord_token'])
     response = discord.get(base_discord_api_url + '/users/@me')
     # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
-    return 'Profile: %s' % response.json()['id']
+    # return 'Profile: %s' % response.json()['id']
+    return render_template('booster.html', id= response.json()['id'])
 
 
 if __name__ == '__main__':

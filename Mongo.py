@@ -236,11 +236,11 @@ def create_group(db, userID):
     while duplicate:
         try:
             result = db.Groups.insert_one(Group)
-            print(result.inserted_id)
             duplicate = False
             groups.append(Group['_id'])
             owned.append(Group['id'])
             db.Users.update({'_id': userID}, {"$set": {'Groups': groups, 'Owned groups': owned}})
+            return result.inserted_id
         except pymongo.errors.DuplicateKeyError:
             print(Group['_id'] + " already exists")
             Group['_id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
