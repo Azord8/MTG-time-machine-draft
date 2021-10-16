@@ -203,15 +203,15 @@ def get_db(MongoDBconnectString, local):
         db = client['MTG_Draft']
         return db
 
-def add_cards(db, userID, transactionKey, transactionVal):
-    if transactionKey == "Card":
-        db.Inventory.update_many({'_id': userID}, {'$set': {"Cards": transactionVal}}, {'upsert': True})
+def add_cards(db, userID, transactionVal):
+        for key, val in transactionVal.items():
+            db.Inventory.update_one({'_id': userID},  {'$inc': {'Cards.' + key: 1}}, upsert=True)
         return "Added Cards"
-    if transactionKey == "Point":
-        db.Inventory.update_many({'_id': userID}, {'$set': {"Points": transactionVal}}, {'upsert': True})
-        return "Added Points"
 
+def add_points(db, userID, transactionVal):
 
+    db.Inventory.update_one({'_id': userID}, {'$inc': {"Points": int(transactionVal)}}, upsert=True)
+    return "Added Points"
 
 def create_user(db, userID):
     user = {'_id': userID}

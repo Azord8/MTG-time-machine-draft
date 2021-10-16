@@ -3,7 +3,8 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-    function getSet(setcode){
+        var test;
+        function getSet(setcode){
         console.log(setcode);
         console.log("test");
         let host = window.location.origin;
@@ -13,6 +14,7 @@
             data: {"action": "get_booster", "setcode": setcode},
             success: function(data){
                 console.log(data);
+                test = data;
                 let obj = JSON.parse(data);
                 result = "";
                 for (const objKey in obj) {
@@ -28,15 +30,31 @@
     }
 
 
-    function saveCards(cards) {
+    function saveCards() {
         let host = window.location.origin;
-        //let card_arr = cards.split(",");
+
+
         $.ajax({
             type: "GET",
             url: host + "/Ajax-handler",
-            data: {"action": "save_cards", "cards": cards},
+            data: {"action": "save_cards", "cards": result},
             success: function (data) {
                 console.log(data)
+                console.log("Cards Saved!");
+            }
+        })
+    }
+
+    function savePoints(points) {
+        let host = window.location.origin;
+        console.log(points);
+
+        $.ajax({
+            type: "GET",
+            url: host + "/Ajax-handler",
+            data: {"action": "save_points", "points": points},
+            success: function (data) {
+                console.log(data);
                 console.log("Cards Saved!");
             }
         })
@@ -52,7 +70,11 @@
 <pre><div id="results"></div></pre>
 <br>
 <br>
-<button class="set_button" value="Save" onclick="saveCards(result)">Save To Profile</button>
+<button class="set_button" value="Save" onclick="saveCards()">Save Cards To Profile</button>
+<br>
+<input type="text" id="points" name="point" placeholder="Input Points Here">
+<br>
+<button class="set_button" value="Save" onclick="savePoints(document.getElementById('points').value)">Save Points To Profile</button>
 
 </body>
 </html>

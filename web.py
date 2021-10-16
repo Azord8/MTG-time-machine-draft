@@ -1,4 +1,6 @@
 # app.py
+
+
 from flask import Flask, request, session, jsonify, render_template
 from requests_oauthlib import OAuth2Session
 from os import environ
@@ -7,7 +9,7 @@ import os
 import Mongo
 import main
 import json
-
+import re
 
 app = Flask(__name__)
 # Settings for your app
@@ -54,7 +56,15 @@ def ajax():
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
     if action == 'save_cards':
-        return Mongo.add_cards(main.db, 'Dummy', "Card", request.args['cards'])
+        diction = {}
+        cards = request.args['cards']
+        cards_reg = re.split("\n", cards)
+        cards_reg.pop(len(cards_reg)-1)
+        for key in cards_reg:
+            diction[key] = 1
+        return Mongo.add_cards(main.db, 'Dummy', diction)
+    if action == 'save_points':
+        return Mongo.add_points(main.db, 'Dummy', request.args['points'])
     return "test"
 
 
