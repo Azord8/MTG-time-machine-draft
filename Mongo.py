@@ -210,7 +210,7 @@ def get_db(MongoDBconnectString, local):
 #   Groups:         What groups this user is a member of
 #   Owned groups:   What groups this user owns
 #   Boosters:       What boosters are waiting for them, this includes unopened boosters
-#   decks:          Not implemented currently
+#   Decks:          Not implemented currently
 def create_user(db, userID):
     user = {'_id': userID}
     db.Users.insert_one(user)
@@ -296,3 +296,23 @@ def has_open_boosters(db, origin, groupID):
             if booster['Group'] is groupID and booster['Origin'] is origin:
                 return True
     return False
+
+
+# currently adds user to group, may be expanded later
+def update_group(db, userID, groupID):
+    group = find_group(db, groupID)
+    if group is None:
+        raise KeyError("No such group")
+    members = group['Members']
+    members.append(userID)
+    result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})
+    return result.inserted_id
+
+
+# currently adds group to user, may be expanded later
+def update_user(db, userID, groupID):
+    user = find_user(db, userID)
+    groups = user.get('Groups', [])
+    groups.append(groupID)
+    result = db.Users.update({'_id': userID}, {'$set': {'Groups': groups}})
+    return result.inserted_id

@@ -5,25 +5,8 @@
     <meta charset="UTF-8">
     <title>Profile</title>
 
-    <script>
-        function createGroup(){
-            let host = window.location.origin;
-        $.ajax({
-            type:"GET",
-            url: host + "/Ajax-handler",
-            data: {"action": "create_group", "id": {{id}}},
-            success: function(data){
-                console.log(data);
-                let result = JSON.parse(data);
-                $('#results').text(result);
-
-            },
-            error: function (e) {
-                console.log(e); // logging the error object to console
-            },
-        })
-        }
-    </script>
+    <script src="{{ url_for('static', filename='profile.js') }}"></script>
+    <script>id = {{ id }}</script>
 </head>
 <body>
 <h1>Your profile id is {{ id }}</h1>

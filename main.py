@@ -190,6 +190,14 @@ def first_time_user(userID):
     return result
 
 
+def join_group(userID, groupID):
+    try:
+        Mongo.update_group(db, userID, groupID)
+    except KeyError as e:
+        return e.message
+    Mongo.update_user(db, userID, groupID)
+    return "You have joined group " + groupID
+
 
 def create_dummy_data():
     Mongo.create_user(db, 'Dummy')
