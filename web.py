@@ -53,6 +53,8 @@ def ajax():
         return json.dumps(main.create_booster(request.args['setcode']))
     elif action == 'create_group':
         return json.dumps(main.first_time_user(request.args['id']))
+    elif action == 'join_group':
+        return json.dumps(main.join_group(request.args['id'], request.args['group']))
     return "test"
 
 
