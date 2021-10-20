@@ -306,7 +306,7 @@ def update_group(db, userID, groupID):
     members = group['Members']
     members.append(userID)
     result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})
-    return result.inserted_id
+    return result.modified_count
 
 
 # currently adds group to user, may be expanded later
@@ -315,4 +315,4 @@ def update_user(db, userID, groupID):
     groups = user.get('Groups', [])
     groups.append(groupID)
     result = db.Users.update_one({'_id': userID}, {'$set': {'Groups': groups}})
-    return result.inserted_id
+    return result.modified_count
