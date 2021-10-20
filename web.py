@@ -17,7 +17,7 @@ else:
 if 'client_secret' in os.environ:
     client_secret = os.environ['client_secret']
 redirect_uri = 'https://mtg-time-machine-draft.herokuapp.com/oauth_callback'
-scope = ['identify', 'email']
+scope = ['identify']
 token_url = 'https://discordapp.com/api/oauth2/token'
 authorize_url = 'https://discordapp.com/api/oauth2/authorize'
 app.secret_key = os.urandom(24)
