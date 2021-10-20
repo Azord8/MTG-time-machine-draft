@@ -314,5 +314,5 @@ def update_user(db, userID, groupID):
     user = find_user(db, userID)
     groups = user.get('Groups', [])
     groups.append(groupID)
-    result = db.Users.update({'_id': userID}, {'$set': {'Groups': groups}})
+    result = db.Users.update_one({'_id': userID}, {'$set': {'Groups': groups}})
     return result.inserted_id
