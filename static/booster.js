@@ -36,7 +36,7 @@ function saveCards(cardUUID) {
     $.ajax({
         type: "GET",
         url: host + "/Ajax-handler",
-        data: {"action": "save_cards", "id": 'DUMMY', "groupID": '2WN6SIM', "cards": cards},
+        data: {"action": "save_cards", "id": 'DUMMY', "groupID": '2WN6SIM', "cards": JSON.stringify(cards)},
         success: function (data) {
             console.log(data)
             console.log("Cards Saved!");

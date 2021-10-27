@@ -160,7 +160,7 @@ def check_setup():
 
 def create_transaction(userID, groupID, transaction):
     if transaction['Cards']:
-        Mongo.add_cards(db, userID, groupID, transaction['Cards'])
+        return Mongo.add_cards(db, userID, groupID, transaction['Cards'])
     elif transaction['Points']:
         Mongo.add_points(db, userID, groupID, transaction['Points'])
 
