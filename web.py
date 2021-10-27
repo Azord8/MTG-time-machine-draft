@@ -43,6 +43,8 @@ def booster():
     os.chdir(dir_path)
     f = open('config.json', "r")
     config = json.load(f)
+    discord = OAuth2Session(client_id, token=session['discord_token'])
+    response = discord.get(base_discord_api_url + '/users/@me')
     # date = datetime.strptime(config['Date'], "%Y-%m-%d")
     # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
     return render_template('booster.html', sets=main.find_boosters(config['Date']), id=response.json()['id'])
