@@ -158,6 +158,37 @@ def check_setup():
         create_booster(setcode)
 
 
+# handling drafting a booster and passing it to the next member
+def draft_booster(userID, draftbooster, card):
+    booster = draftbooster['booster']
+    groupID = booster['Group']
+    existingbooster = Mongo.has_open_boosters(db, userID, groupID)
+    if existingbooster is not False:
+        if existingbooster['Booster'] is booster:
+            del booster[card]
+#             handle adding card here
+            if booster:
+                group = Mongo.find_group(db, groupID)
+                members = group['members']
+                if members.index(userID) is len(members):
+                    pass
+
+
+def first_time_user(userID):
+    Mongo.create_user(db, userID)
+    result = Mongo.create_group(db, userID)
+    return result
+
+
+def join_group(userID, groupID):
+    try:
+        Mongo.update_group(db, userID, groupID)
+    except KeyError as e:
+        return e.message
+    Mongo.update_user(db, userID, groupID)
+    return "You have joined group " + groupID
+
+
 def create_transaction(userID, groupID, transaction):
     if 'Cards' in transaction:
         return Mongo.add_cards(db, userID, groupID, transaction['Cards'])
