@@ -302,11 +302,14 @@ def has_open_boosters(db, origin, groupID):
 def update_group(db, userID, groupID):
     group = find_group(db, groupID)
     if group is None:
-        raise KeyError("No such group")
+        raise KeyError
     members = group['Members']
-    members.append(userID)
-    result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})
-    return result.modified_count
+    if userID in members:
+        raise KeyError
+    else:
+        members.append(userID)
+        result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})
+        return result.modified_count
 
 
 # currently adds group to user, may be expanded later

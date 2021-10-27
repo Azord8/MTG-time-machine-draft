@@ -43,11 +43,15 @@ def booster():
     os.chdir(dir_path)
     f = open('config.json', "r")
     config = json.load(f)
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
+    if client_id != "127.0.0.1":
+        discord = OAuth2Session(client_id, token=session['discord_token'])
+        response = discord.get(base_discord_api_url + '/users/@me')
+        return render_template('booster.html', sets=main.find_boosters(config['Date']), id=response.json()['id'])
+    else:
+        return render_template('booster.html', sets=main.find_boosters(config['Date']))
+
     # date = datetime.strptime(config['Date'], "%Y-%m-%d")
     # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
-    return render_template('booster.html', sets=main.find_boosters(config['Date']), id=response.json()['id'])
 
 
 @app.route('/Ajax-handler')
@@ -114,11 +118,15 @@ def profile():
     Example profile page to demonstrate how to pull the user information
     once we have a valid access token after all OAuth negotiation.
     """
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
+    if client_id != "127.0.0.1":
+        discord = OAuth2Session(client_id, token=session['discord_token'])
+        response = discord.get(base_discord_api_url + '/users/@me')
+        return render_template('profile.html', id=response.json()['id'])
+    else:
+        return render_template('profile.html')
     # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
     # return 'Profile: %s' % response.json()['id']
-    return render_template('profile.html', id=response.json()['id'])
+
 
 
 if __name__ == '__main__':

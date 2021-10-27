@@ -6,7 +6,13 @@
     <title>Profile</title>
 
     <script src="{{ url_for('static', filename='profile.js') }}"></script>
-    <script>id = BigInt( {{ id }} );</script>
+    <script>
+        if(typeof id === 'undefined'){
+            id = "DUMMY";
+        }else{
+            id = BigInt( {{ id }} );
+        }
+    </script>
 </head>
 <body>
 <h1>Your profile id is {{ id }}</h1>

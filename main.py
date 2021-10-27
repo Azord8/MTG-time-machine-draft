@@ -183,8 +183,8 @@ def first_time_user(userID):
 def join_group(userID, groupID):
     try:
         Mongo.update_group(db, userID, groupID)
-    except KeyError as e:
-        return e.message
+    except KeyError:
+        return "You are already in this group!"
     Mongo.update_user(db, userID, groupID)
     return "You have joined group " + groupID
 
