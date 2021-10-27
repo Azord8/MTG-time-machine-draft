@@ -316,3 +316,69 @@ def update_user(db, userID, groupID):
     groups.append(groupID)
     result = db.Users.update_one({'_id': userID}, {'$set': {'Groups': groups}})
     return result.modified_count
+
+
+# global Inventory object
+#   _id:        userID, should be the discord user ID when that is set up
+#   "GroupID":  inventory object will have a number of sub-documents under the key of the group they belong to
+#       game specific inventory object
+#           Points:         positive integer of points for that group
+#           Cards:          dictionary of all cards and number of each card for this group
+# card transactionval
+#   Dictionary
+#   Key   = card UUID
+#   Value = number of that card to be added or removed
+def add_cards(db, userID, groupID, transactionVal):
+    globalinventory = db.Inventory.find_one({'_id': userID})
+    if globalinventory is not None:
+        groupinventory = globalinventory.get(groupID, {})
+        if groupinventory:
+            cards = groupinventory.get('Cards', {})
+        else:
+            cards = {}
+            groupinventory = {'Points': 0, 'Cards': cards}
+    else:
+        cards = {}
+        groupinventory = {'Points': 0, 'Cards': cards}
+        globalinventory = {'_id': userID, groupID: groupinventory}
+        db.Inventory.insert_one(globalinventory)
+
+    for cardUUID, val in transactionVal.items():
+        if cardUUID in cards:
+            if not cards[cardUUID] + val < 0:
+                cards[cardUUID] += val
+            else:
+                raise ValueError('Cannot remove more cards than you own')
+        else:
+            cards[cardUUID] = val
+
+    groupinventory['Cards'] = cards
+    db.Inventory.update_one({'_id': userID},  {'$set': {groupID: groupinventory}})
+    return "Added Cards"
+
+
+# point transactionval
+#   non zero integer
+def add_points(db, userID, groupID, transactionVal):
+    globalinventory = db.Inventory.find_one({'_id': userID})
+    if globalinventory is not None:
+        groupinventory = globalinventory.get(groupID, {})
+        if groupinventory:
+            points = groupinventory.get('Points', 0)
+        else:
+            points = 0
+            groupinventory = {'Points': 0, 'Cards': {}}
+    else:
+        points = 0
+        groupinventory = {'Points': 0, 'Cards': {}}
+        globalinventory = {'_id': userID, groupID: groupinventory}
+        db.Inventory.insert_one(globalinventory)
+
+    if points + int(transactionVal) < 0:
+        raise ValueError('Cannot have less than 0 points')
+    else:
+        points += int(transactionVal)
+
+    groupinventory['Points'] = points
+    db.Inventory.update_one({'_id': userID}, {"$set": {groupID: groupinventory}})
+    return "Added Points"
