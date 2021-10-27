@@ -59,7 +59,8 @@ def ajax():
         return json.dumps(main.join_group(request.args['id'], request.args['groupID']))
     if action == 'save_cards':
         cards = request.args['cards']
-        transaction = {"Cards": cards}
+        transaction = {"Cards": json.load(cards)}
+        print(json.load(cards))
         return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
     # if action == 'save_points':
     #     return Mongo.add_points(main.db, 'Dummy', request.args['points'])

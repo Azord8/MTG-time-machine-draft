@@ -343,7 +343,7 @@ def add_cards(db, userID, groupID, transactionVal):
         globalinventory = {'_id': userID, groupID: groupinventory}
         db.Inventory.insert_one(globalinventory)
 
-    for cardUUID, val in transactionVal.items():
+    for cardUUID, val in transactionVal:
         if cardUUID in cards:
             if not cards[cardUUID] + val < 0:
                 cards[cardUUID] += val

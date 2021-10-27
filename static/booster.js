@@ -30,11 +30,13 @@ function getSet(setcode){
 function saveCards(cardUUID) {
     let host = window.location.origin;
     console.log(cardUUID);
+    cards = {};
+    cards[cardUUID] = 1;
 
     $.ajax({
         type: "GET",
         url: host + "/Ajax-handler",
-        data: {"action": "save_cards", "id": 'DUMMY', "groupID": '2WN6SIM', "cards": result},
+        data: {"action": "save_cards", "id": 'DUMMY', "groupID": '2WN6SIM', "cards": cards},
         success: function (data) {
             console.log(data)
             console.log("Cards Saved!");
