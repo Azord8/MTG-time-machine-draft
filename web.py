@@ -39,7 +39,9 @@ def setup():
 @app.route('/booster')
 def booster():
     # TODO Ajax call
-    f = open("config.json", "r")
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
+    f = open('config.json', "r")
     config = json.load(f)
     # date = datetime.strptime(config['Date'], "%Y-%m-%d")
     # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
@@ -55,6 +57,13 @@ def ajax():
         return json.dumps(main.first_time_user(request.args['id']))
     elif action == 'join_group':
         return json.dumps(main.join_group(request.args['id'], request.args['groupID']))
+    if action == 'save_cards':
+        cards = request.args['cards']
+        transaction = {"Cards": json.loads(cards)}
+        return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
+    if action == 'save_points':
+        transaction = {"Points": request.args['points']}
+        return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
     return "test"
 
 
