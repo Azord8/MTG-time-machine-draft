@@ -51,8 +51,6 @@ def booster():
 @app.route('/Ajax-handler')
 def ajax():
     action = request.args['action']
-    print(request.args)
-    print(request.get_json())
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
     elif action == 'create_group':
@@ -63,8 +61,9 @@ def ajax():
         cards = request.args['cards']
         transaction = {"Cards": json.loads(cards)}
         return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
-    # if action == 'save_points':
-    #     return Mongo.add_points(main.db, 'Dummy', request.args['points'])
+    if action == 'save_points':
+        transaction = {"Points": request.args['points']}
+        return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
     return "test"
 
 

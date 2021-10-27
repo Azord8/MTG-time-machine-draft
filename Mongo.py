@@ -374,11 +374,11 @@ def add_points(db, userID, groupID, transactionVal):
         globalinventory = {'_id': userID, groupID: groupinventory}
         db.Inventory.insert_one(globalinventory)
 
-    if points + transactionVal < 0:
+    if points + int(transactionVal) < 0:
         raise ValueError('Cannot have less than 0 points')
     else:
-        points += transactionVal
+        points += int(transactionVal)
 
-    groupinventory['points'] = points
+    groupinventory['Points'] = points
     db.Inventory.update_one({'_id': userID}, {"$set": {groupID: groupinventory}})
     return "Added Points"

@@ -159,10 +159,10 @@ def check_setup():
 
 
 def create_transaction(userID, groupID, transaction):
-    if transaction['Cards']:
+    if 'Cards' in transaction:
         return Mongo.add_cards(db, userID, groupID, transaction['Cards'])
-    elif transaction['Points']:
-        Mongo.add_points(db, userID, groupID, transaction['Points'])
+    elif 'Points' in transaction:
+        return Mongo.add_points(db, userID, groupID, transaction['Points'])
 
 
 def create_dummy_data():

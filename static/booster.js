@@ -29,6 +29,7 @@ function getSet(setcode){
 
 function saveCards(cardUUID) {
     let host = window.location.origin;
+    let group = $('#groupID').val();
     console.log(cardUUID);
     cards = {};
     cards[cardUUID] = 1;
@@ -36,7 +37,7 @@ function saveCards(cardUUID) {
     $.ajax({
         type: "GET",
         url: host + "/Ajax-handler",
-        data: {"action": "save_cards", "id": 'DUMMY', "groupID": '2WN6SIM', "cards": JSON.stringify(cards)},
+        data: {"action": "save_cards", "id": id, "groupID": group, "cards": JSON.stringify(cards)},
         success: function (data) {
             console.log(data)
             console.log("Cards Saved!");
@@ -46,15 +47,16 @@ function saveCards(cardUUID) {
 
 function savePoints(points) {
     let host = window.location.origin;
+    let group = $('#groupID').val();
     console.log(points);
 
     $.ajax({
         type: "GET",
         url: host + "/Ajax-handler",
-        data: {"action": "save_points", "points": points},
+        data: {"action": "save_points", "id": id, "groupID": group, "points": points},
         success: function (data) {
             console.log(data);
-            console.log("Cards Saved!");
+            console.log("Points work");
         }
     })
 }
