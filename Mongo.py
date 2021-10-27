@@ -227,9 +227,9 @@ def create_group(db, userID):
     groups = user.get('Groups', [])
     owned = user.get('Owned groups', [])
     # limit to ten groups for now
-    if len(groups) > 10:
+    if len(groups) >= 10:
         print("You have already created 10 groups")
-        return
+        return "You have already created 10 groups"
     groupID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
     Group = {'_id': groupID, 'Owner': userID, 'Members': [userID], 'config': False}
     duplicate = True
@@ -302,10 +302,10 @@ def has_open_boosters(db, origin, groupID):
 def update_group(db, userID, groupID):
     group = find_group(db, groupID)
     if group is None:
-        raise KeyError
+        raise KeyError("No such group")
     members = group['Members']
     if userID in members:
-        raise KeyError
+        raise KeyError("User is already in group " + groupID)
     else:
         members.append(userID)
         result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})

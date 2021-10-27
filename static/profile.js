@@ -25,12 +25,13 @@ function joinGroup(){
             data: {"action": "join_group", "id": id, "groupID": group},
             success: function(data){
                 console.log(data);
-                let result = JSON.parse(data);
+                let result = data;
                 $('#results').text(result);
 
             },
             error: function (e) {
                 console.log(e); // logging the error object to console
+                alert(e)
             },
         })
     else alert("Please fill out group invite code")

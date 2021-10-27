@@ -60,9 +60,12 @@ def ajax():
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
     elif action == 'create_group':
-        return json.dumps(main.first_time_user(request.args['id']))
+        return json.dumps(main.create_group(request.args['id']))
     elif action == 'join_group':
-        return json.dumps(main.join_group(request.args['id'], request.args['groupID']))
+        try:
+            json.dump(main.join_group(request.args['id'], request.args['groupID']))
+        except KeyError as e:
+            return str(e)
     if action == 'save_cards':
         cards = request.args['cards']
         transaction = {"Cards": json.loads(cards)}

@@ -176,17 +176,22 @@ def draft_booster(userID, draftbooster, card):
 
 def first_time_user(userID):
     Mongo.create_user(db, userID)
-    result = Mongo.create_group(db, userID)
-    return result
+
+
+def create_group(userID):
+    if Mongo.find_user(db, userID) is None:
+        first_time_user(userID)
+    return Mongo.create_group(db, userID)
 
 
 def join_group(userID, groupID):
-    try:
-        Mongo.update_group(db, userID, groupID)
-    except KeyError:
-        return "You are already in this group!"
-    Mongo.update_user(db, userID, groupID)
-    return "You have joined group " + groupID
+    if Mongo.find_user(db, userID) == 'null':
+        try:
+            Mongo.update_group(db, userID, groupID)
+        except KeyError as e:
+            raise e
+        Mongo.update_user(db, userID, groupID)
+        return "You have joined group " + groupID
 
 
 def create_transaction(userID, groupID, transaction):
