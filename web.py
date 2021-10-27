@@ -1,15 +1,11 @@
 # app.py
-
-
 from flask import Flask, request, session, jsonify, render_template
 from requests_oauthlib import OAuth2Session
 from os import environ
 import os
-
-import Mongo
 import main
 import json
-import re
+
 
 app = Flask(__name__)
 # Settings for your app
@@ -21,7 +17,7 @@ else:
 if 'client_secret' in os.environ:
     client_secret = os.environ['client_secret']
 redirect_uri = 'https://mtg-time-machine-draft.herokuapp.com/oauth_callback'
-scope = ['identify', 'email']
+scope = ['identify']
 token_url = 'https://discordapp.com/api/oauth2/token'
 authorize_url = 'https://discordapp.com/api/oauth2/authorize'
 app.secret_key = os.urandom(24)
@@ -43,7 +39,9 @@ def setup():
 @app.route('/booster')
 def booster():
     # TODO Ajax call
-    f = open("config.json", "r")
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
+    f = open('config.json', "r")
     config = json.load(f)
     # date = datetime.strptime(config['Date'], "%Y-%m-%d")
     # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
@@ -55,16 +53,16 @@ def ajax():
     action = request.args['action']
     if action == 'get_booster':
         return json.dumps(main.create_booster(request.args['setcode']))
+    elif action == 'create_group':
+        return json.dumps(main.first_time_user(request.args['id']))
+    elif action == 'join_group':
+        return json.dumps(main.join_group(request.args['id'], request.args['groupID']))
     if action == 'save_cards':
-        diction = {}
         cards = request.args['cards']
-        cards_reg = re.split("\n", cards)
-        cards_reg.pop(len(cards_reg)-1)
-        for key in cards_reg:
-            diction[key] = 1
-        return Mongo.add_cards(main.db, 'Dummy', diction)
-    if action == 'save_points':
-        return Mongo.add_points(main.db, 'Dummy', request.args['points'])
+        transaction = {"Cards": cards}
+        return main.create_transaction(request.args['id'], request.args['groupID'], transaction)
+    # if action == 'save_points':
+    #     return Mongo.add_points(main.db, 'Dummy', request.args['points'])
     return "test"
 
 
@@ -113,11 +111,11 @@ def profile():
     Example profile page to demonstrate how to pull the user information
     once we have a valid access token after all OAuth negotiation.
     """
-    #discord = OAuth2Session(client_id, token=session['discord_token'])
-    #response = discord.get(base_discord_api_url + '/users/@me')
+    discord = OAuth2Session(client_id, token=session['discord_token'])
+    response = discord.get(base_discord_api_url + '/users/@me')
     # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
-
-    return render_template('profile.html')
+    # return 'Profile: %s' % response.json()['id']
+    return render_template('profile.html', id=response.json()['id'])
 
 
 if __name__ == '__main__':

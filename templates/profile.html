@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title>Profile</title>
+
+    <script src="{{ url_for('static', filename='profile.js') }}"></script>
+    <script>id = BigInt( {{ id }} );</script>
 </head>
 <body>
-<label id="cards"><b>Cards:</b></label>
-<div>
-
-</div>
+<h1>Your profile id is {{ id }}</h1>
+<button onclick="createGroup()">Create Group</button>
+<input type="text" id="groupID"><button  onclick="joinGroup()">Join Group</button>
+<div id="results"></div>
 </body>
 </html>

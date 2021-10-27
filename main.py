@@ -158,9 +158,13 @@ def check_setup():
         create_booster(setcode)
 
 
+def create_transaction(userID, groupID, transaction):
+    if transaction['Cards']:
+        Mongo.add_cards(db, userID, groupID, transaction['Cards'])
+    elif transaction['Points']:
+        Mongo.add_points(db, userID, groupID, transaction['Points'])
+
+
 def create_dummy_data():
     Mongo.create_user(db, 'Dummy')
     Mongo.create_group(db, 'Dummy')
-
-
-#create_dummy_data()

@@ -203,24 +203,30 @@ def get_db(MongoDBconnectString, local):
         db = client['MTG_Draft']
         return db
 
-def add_cards(db, userID, transactionVal):
-        for key, val in transactionVal.items():
-            db.Inventory.update_one({'_id': userID},  {'$inc': {'Cards.' + key: 1}}, upsert=True)
-        return "Added Cards"
 
-def add_points(db, userID, transactionVal):
-
-    db.Inventory.update_one({'_id': userID}, {'$inc': {"Points": int(transactionVal)}}, upsert=True)
-    return "Added Points"
-
+# creates user object, initially has no fields other than id
+# user object:
+#   _id:            userID, should be the discord user ID when that is set up
+#   Groups:         What groups this user is a member of
+#   Owned groups:   What groups this user owns
+#   Boosters:       What boosters are waiting for them, this includes unopened boosters
+#   Decks:          Not implemented currently
 def create_user(db, userID):
     user = {'_id': userID}
     db.Users.insert_one(user)
 
 
+# creates a group object
+# group object:
+#   _id:            7 character alphanumeric ID
+#   Owner:          userID of creator of group
+#   Members:        array of userIDs of members of this group
+#   config:         game config variables, false if no customization
 def create_group(db, userID):
-    user = db.Users.find_one({'_id': userID})
+    user = find_user(db, userID)
     groups = user.get('Groups', [])
+    owned = user.get('Owned groups', [])
+    # limit to ten groups for now
     if len(groups) > 10:
         print("You have already created 10 groups")
         return
@@ -230,10 +236,149 @@ def create_group(db, userID):
     while duplicate:
         try:
             result = db.Groups.insert_one(Group)
-            print(result.inserted_id)
             duplicate = False
             groups.append(Group['_id'])
-            db.Users.update({'_id': userID}, {"$set": {'Groups': groups}})
+            owned.append(Group['_id'])
+            db.Users.update({'_id': userID}, {"$set": {'Groups': groups, 'Owned groups': owned}})
+            return result.inserted_id
         except pymongo.errors.DuplicateKeyError:
             print(Group['_id'] + " already exists")
             Group['_id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+
+
+# Will store a single draft booster.
+# If the booster is not passed, it will store a placeholder booster to be created later
+# This method does not care if the user has existing boosters
+# Draft booster object
+#   Set:            setcode of the booster
+#   Booster:        array of all the cards in the booster, missing if the booster hasn't been opened yet
+#   Group:          Group this booster has been drafted for
+#   Origin:         userID of the drafter
+def store_draft_booster(db, userID, groupID, setcode, booster=None):
+    user = find_user(db, userID)
+    boosters = user.get('Boosters', [])
+    if booster is not None:
+        boosters.append({'Set': setcode, 'Booster': booster, 'Group': groupID, "Origin": userID})
+    else:
+        boosters.append({'Set': setcode, 'Group': groupID, "Origin": userID})
+    db.Users.update({'_id': userID}, {'$set': {'Boosters': boosters}})
+
+
+# Will find first instance of a booster for one user in one group.
+# Or false if none found, or none with the provided groupID
+def find_booster(db, userID, groupID):
+    user = find_user(db, userID)
+    boosters = user.get('Boosters')
+    if boosters is not None:
+        for i in boosters:
+            if groupID in i['Booster']:
+                return i
+        return False
+    return False
+
+
+def find_user(db, userID):
+    result = db.Users.find_one({'_id': userID})
+    return result
+
+
+def find_group(db, groupID):
+    result = db.Groups.find_one({'_id': groupID})
+    return result
+
+
+# search group for open booster with groupID
+def has_open_boosters(db, origin, groupID):
+    group = find_group(db, groupID)
+    for userID in group['Members']:
+        member = find_user(db, userID)
+        for booster in member['Boosters']:
+            if booster['Group'] is groupID and booster['Origin'] is origin:
+                return True
+    return False
+
+
+# currently adds user to group, may be expanded later
+def update_group(db, userID, groupID):
+    group = find_group(db, groupID)
+    if group is None:
+        raise KeyError("No such group")
+    members = group['Members']
+    members.append(userID)
+    result = db.Groups.update_one({'_id': groupID}, {'$set': {'Members': members}})
+    return result.modified_count
+
+
+# currently adds group to user, may be expanded later
+def update_user(db, userID, groupID):
+    user = find_user(db, userID)
+    groups = user.get('Groups', [])
+    groups.append(groupID)
+    result = db.Users.update_one({'_id': userID}, {'$set': {'Groups': groups}})
+    return result.modified_count
+
+
+# global Inventory object
+#   _id:        userID, should be the discord user ID when that is set up
+#   "GroupID":  inventory object will have a number of sub-documents under the key of the group they belong to
+#       game specific inventory object
+#           Points:         positive integer of points for that group
+#           Cards:          dictionary of all cards and number of each card for this group
+# card transactionval
+#   Dictionary
+#   Key   = card UUID
+#   Value = number of that card to be added or removed
+def add_cards(db, userID, groupID, transactionVal):
+    globalinventory = db.Inventory.find_one({'_id': userID})
+    if globalinventory is not None:
+        groupinventory = globalinventory.get(groupID, {})
+        if groupinventory:
+            cards = groupinventory.get('Cards', {})
+        else:
+            cards = {}
+            groupinventory = {'Points': 0, 'Cards': cards}
+    else:
+        cards = {}
+        groupinventory = {'Points': 0, 'Cards': cards}
+        globalinventory = {'_id': userID, groupID: groupinventory}
+        db.Inventory.insert_one(globalinventory)
+
+    for cardUUID, val in transactionVal.items():
+        if cardUUID in cards:
+            if not cards[cardUUID] + val < 0:
+                cards[cardUUID] += val
+            else:
+                raise ValueError('Cannot remove more cards than you own')
+        else:
+            cards[cardUUID] = val
+
+    groupinventory['Cards'] = cards
+    db.Inventory.update_one({'_id': userID},  {'$set': {groupID: groupinventory}})
+    return "Added Cards"
+
+
+# point transactionval
+#   non zero integer
+def add_points(db, userID, groupID, transactionVal):
+    globalinventory = db.Inventory.find_one({'_id': userID})
+    if globalinventory is not None:
+        groupinventory = globalinventory.get(groupID, {})
+        if groupinventory:
+            points = groupinventory.get('Points', 0)
+        else:
+            points = 0
+            groupinventory = {'Points': 0, 'Cards': {}}
+    else:
+        points = 0
+        groupinventory = {'Points': 0, 'Cards': {}}
+        globalinventory = {'_id': userID, groupID: groupinventory}
+        db.Inventory.insert_one(globalinventory)
+
+    if points + transactionVal < 0:
+        raise ValueError('Cannot have less than 0 points')
+    else:
+        points += transactionVal
+
+    groupinventory['points'] = points
+    db.Inventory.update_one({'_id': userID}, {"$set": {groupID: groupinventory}})
+    return "Added Points"
