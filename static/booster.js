@@ -1,7 +1,6 @@
 var test;
 function getSet(setcode){
     console.log(setcode);
-    console.log("test");
     let host = window.location.origin;
     $.ajax({
         type:"GET",
@@ -15,9 +14,17 @@ function getSet(setcode){
             console.log(obj)
             result = "";
             for (const objKey in obj) {
-                result += '<button value="' + obj[objKey][0] + '" onclick="saveCards(this.value)">' + obj[objKey][1] + '</button>';
+                result += '<div><div class="card text-center"><div class="card-body"><h1>' + obj[objKey]['Name'] + '</h1>';
+                if(typeof obj[objKey]['Mana cost'] !== "undefined" )
+                    result+= '<p>' + obj[objKey]['Mana cost'] + '</p>';
+                result += '<p>' + obj[objKey]['Rarity'] + '</p>';
+                if(typeof obj[objKey]['Text'] !== "undefined" )
+                    result += '<p class="card-text">' + obj[objKey]['Text'] + '</p>';
+                result+= '</div></div></div>'
+                // result += '<button value="' + obj[objKey][0] + '" onclick="saveCards(this.value)">' + obj[objKey][1] + '</button>';
             }
-            $('#results').html(result);
+            $('.owl-carousel1').html(result);
+            carousels();
 
         },
         error: function (e) {
@@ -60,3 +67,31 @@ function savePoints(points) {
         }
     })
 }
+
+var carousels = function () {
+    $(".owl-carousel1").owlCarousel({
+      loop: true,
+      center: true,
+      margin: 0,
+      responsiveClass: true,
+      nav: false,
+      responsive: {
+        0: {
+          items: 2,
+          nav: false
+        },
+        680: {
+          items: 3,
+          nav: false,
+          loop: false
+        },
+        1000: {
+          items: 4,
+          nav: true
+        }
+      }
+    });
+};
+
+carousels();
+

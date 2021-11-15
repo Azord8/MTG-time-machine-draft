@@ -50,6 +50,7 @@ def find_boosters(date):
     return boosters
 
 
+# returns an array of dictionaries with some card details, may provide more card details at a later time
 def create_booster(setcode):
     boosters = db.Boosters.find_one({'_id': setcode})
     print(boosters)
@@ -77,7 +78,12 @@ def create_booster(setcode):
     createdCards = []
     for i in createdBooster:
         card = db.Cards.find_one({'_id': i})
-        createdCards.append([i, card['Name']])
+        thisCard = {'UUID': i, 'Name': card['Name'], 'Rarity': card['Rarity']}
+        if card.get('Text') is not None:
+            thisCard['Text'] = card['Text']
+        if card.get('Mana cost') is not None:
+            thisCard['Mana cost'] = card['Mana cost']
+        createdCards.append(thisCard)
     return createdCards
 
 

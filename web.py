@@ -1,13 +1,19 @@
 # app.py
 from flask import Flask, request, session, jsonify, render_template
+from flask_assets import Environment, Bundle
 from requests_oauthlib import OAuth2Session
 from os import environ
 import os
 import main
 import json
+import sass
 
 
 app = Flask(__name__)
+assets = Environment(app)
+assets.url = app.static_url_path
+scss = Bundle('scss/style.scss', output='css/all.css', filters='libsass,cssmin')
+assets.register('scss_all', scss)
 # Settings for your app
 base_discord_api_url = 'https://discordapp.com/api'
 if 'client_id' in os.environ:
@@ -43,11 +49,12 @@ def booster():
     os.chdir(dir_path)
     f = open('config.json', "r")
     config = json.load(f)
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
-    # date = datetime.strptime(config['Date'], "%Y-%m-%d")
-    # return "date = " + config['Date'] + "<br>" + json.dumps(main.find_sets(config['Date']))
-    return render_template('booster.html', sets=main.find_boosters(config['Date']), id=response.json()['id'])
+    if client_id != "127.0.0.1":
+        discord = OAuth2Session(client_id, token=session['discord_token'])
+        response = discord.get(base_discord_api_url + '/users/@me')
+        return render_template('booster.html', sets=main.find_boosters(config['Date']), id=response.json()['id'])
+    else:
+        return render_template('booster.html', sets=main.find_boosters(config['Date']))
 
 
 @app.route('/Ajax-handler')
