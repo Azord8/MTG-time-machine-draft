@@ -14,7 +14,7 @@ function getSet(setcode){
             console.log(obj)
             result = "";
             for (const objKey in obj) {
-                result += '<div><div class="card text-center"><div class="card-body"><h1>' + obj[objKey]['Name'] + '</h1>';
+                result += '<div><div class="card text-center"><div class="card-body"><h4>' + obj[objKey]['Name'] + '</h4>';
                 if(typeof obj[objKey]['Mana cost'] !== "undefined" )
                     result+= '<p>' + obj[objKey]['Mana cost'] + '</p>';
                 result += '<p>' + obj[objKey]['Rarity'] + '</p>';
@@ -70,26 +70,27 @@ function savePoints(points) {
 
 var carousels = function () {
     $(".owl-carousel1").owlCarousel({
-      loop: true,
-      center: true,
-      margin: 0,
-      responsiveClass: true,
-      nav: false,
-      responsive: {
-        0: {
-          items: 2,
-          nav: false
-        },
-        680: {
-          items: 3,
-          nav: false,
-          loop: false
-        },
-        1000: {
-          items: 4,
-          nav: true
+        loop: true,
+        center: true,
+        margin: 0,
+        responsiveClass: true,
+        nav: false,
+        dots:false,
+        animateIn: true,
+        responsive: {
+            0: {
+              items: 2,
+            },
+            680: {
+              items: 3,
+            },
+            1000: {
+              items: 5,
+            },
+            1600: {
+              items: 7,
+            }
         }
-      }
     });
 };
 

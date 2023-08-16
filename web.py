@@ -2,7 +2,7 @@
 from flask import Flask, request, session, jsonify, render_template
 from flask_assets import Environment, Bundle
 from requests_oauthlib import OAuth2Session
-from os import environ
+# from os import pip
 import os
 import main
 import json
@@ -130,4 +130,6 @@ def profile():
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
-    app.run(threaded=True, host='0.0.0.0',  port=environ.get('PORT', 5000))
+    # works for heroku, but I'm moving to AWS
+    # app.run(threaded=True, host='0.0.0.0',  port=environ.get('PORT', 5000))
+    app.run(threaded=True, host='0.0.0.0', port=5000)
