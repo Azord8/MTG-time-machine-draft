@@ -1,3 +1,5 @@
+import os.path
+
 from pymongo import errors
 from pymongo import MongoClient
 from os.path import exists
@@ -195,7 +197,7 @@ def update_set(db, set):
 
 def get_db(MongoDBconnectString, local):
     if local:
-        client = MongoClient("127.0.0.1:27017")
+        client = MongoClient("mongodb://host.docker.internal:27017")
         db = client['MTG_Draft']
         return db
     else:

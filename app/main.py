@@ -1,4 +1,4 @@
-import Mongo
+from app import Mongo
 from datetime import datetime
 import random
 import os
@@ -95,14 +95,17 @@ def check_setup():
         f = open("config.json", "w")
         f.write(json.dumps(configDefaults))
 
-    f = open("config.json", "r+")
+    f = open("/MTG app/config.json", "r+")
     config = json.load(f)
 
     if config['First time setup'] == "True":
+        # check for sets directory
+        if not os.path.isdir("sets"):
+            os.makedirs("sets")
         # fetch all sets
-        # Mongo.import_all_sets()
+        Mongo.import_all_sets()
 
-        for filename in os.listdir("sets"):
+        for filename in os.listdir("sets/"):
             with open(os.path.join("sets/", filename), 'r') as fileset:
                 set = Mongo.import_set_from_file(fileset)
                 Mongo.load_set(db, set)
@@ -126,27 +129,27 @@ def check_setup():
         if val == "1":
             Mongo.import_all_sets()
         elif val == "2":
-            for filename in os.listdir("sets"):
+            for filename in os.listdir("sets/"):
                 with open(os.path.join("sets/", filename), 'r') as f:
                     set = Mongo.import_set_from_file(f)
                     Mongo.load_set(db, set)
         elif val == "3":
-            for filename in os.listdir("sets"):
+            for filename in os.listdir("sets/"):
                 with open(os.path.join("sets/", filename), 'r') as f:
                     set = Mongo.import_set_from_file(f)
                     Mongo.load_booster(db, set)
         elif val == '4':
-            for filename in os.listdir("sets"):
+            for filename in os.listdir("sets/"):
                 with open(os.path.join("sets/", filename), 'r') as f:
                     set = Mongo.import_set_from_file(f)
                     Mongo.update_set(db, set)
         elif val == '5':
-            for filename in os.listdir("sets"):
+            for filename in os.listdir("sets/"):
                 with open(os.path.join("sets/", filename), 'r') as f:
                     set = Mongo.import_set_from_file(f)
                     Mongo.load_sheet(db, set)
         elif val == '6':
-            for filename in os.listdir("sets"):
+            for filename in os.listdir("sets/"):
                 with open(os.path.join("sets/", filename), 'r') as f:
                     set = Mongo.import_set_from_file(f)
                     Mongo.load_cards(db, set)

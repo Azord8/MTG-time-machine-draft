@@ -1,13 +1,11 @@
 # app.py
-from flask import Flask, request, session, jsonify, render_template
+from flask import Flask, request, session, render_template
 from flask_assets import Environment, Bundle
 from requests_oauthlib import OAuth2Session
 # from os import pip
 import os
-import main
+from app import main
 import json
-import sass
-
 
 app = Flask(__name__)
 assets = Environment(app)
@@ -28,6 +26,11 @@ token_url = 'https://discordapp.com/api/oauth2/token'
 authorize_url = 'https://discordapp.com/api/oauth2/authorize'
 app.secret_key = os.urandom(24)
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 
 # A welcome message to test our server
