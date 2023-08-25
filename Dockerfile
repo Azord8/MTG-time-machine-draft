@@ -17,9 +17,10 @@ RUN pip install -r requirements.txt
 # Need to add rest of app
 COPY web.py .
 COPY config.json .
-COPY app/* ./app/
-COPY static/* ./static/
-COPY templates/* ./templates/
+COPY config-sample.json .
+COPY app/ ./app/
+COPY static/ ./static/
+COPY templates/ ./templates/
 
 # Specify the command to run on container start
 CMD [ "python", "./web.py" ]

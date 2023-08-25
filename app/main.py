@@ -89,7 +89,7 @@ def create_booster(setcode):
 
 def check_setup():
     if not exists("config.json"):
-        g = open("config-sample.json", "r+")
+        g = open("config-sample.json", "r")
         configDefaults = json.load(g)
         print("GET OUT!")
         f = open("config.json", "w")
@@ -113,6 +113,8 @@ def check_setup():
                 Mongo.load_cards(db, set)
                 Mongo.load_booster(db, set)
         config['First time setup'] = "False"
+        f.seek(0)
+        f.truncate()
         f.write(json.dumps(config))
         return "database setup!"
 
