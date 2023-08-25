@@ -1,0 +1,40 @@
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: MTGdraft
+    image: mtg
+    restart: unless-stopped
+    environment:
+      APP_ENV: "prod"
+      APP_DEBUG: "False"
+      APP_PORT: 5000
+      DB_URL: mongodb://mongodb:27018
+    depends_on:
+      - mongodb
+    networks:
+      - MTGnetwork
+
+
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mtgdb
+    ports:
+      - 27018:27017
+    restart: unless-stopped
+    environment:
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - MTGnetwork
+
+networks:
+  MTGnetwork:
+    driver: bridge
+
+volumes:
+  mongodbdata:
