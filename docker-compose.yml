@@ -6,6 +6,8 @@ services:
     container_name: MTGdraft
     image: mtg
     restart: unless-stopped
+    ports:
+      - 5000:5000
     environment:
       APP_ENV: "prod"
       APP_DEBUG: "False"

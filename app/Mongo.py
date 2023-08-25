@@ -197,7 +197,7 @@ def update_set(db, set):
 
 def get_db(MongoDBconnectString, local):
     if local:
-        client = MongoClient("mongodb://host.docker.internal:27017")
+        client = MongoClient("mtgdb")
         db = client['MTG_Draft']
         return db
     else:
